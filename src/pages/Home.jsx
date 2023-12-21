@@ -1,26 +1,16 @@
-// Login.jsx
 import React from "react";
+import Container from 'react-bootstrap/Container';
 
-import { Navigation } from "../components";
-import { jwtDecode } from "jwt-decode";
-
-import { useAuth } from "../contexts/authContext";
+import Navigation from "../Components/Common/Navbar";
 
 const Home = () => {
 
-    const { user, setUser, isLogged, setLogged } = useAuth();
-
     return (
         <>
-        <Navigation></Navigation>
-        <h1>Home</h1>
-        <br></br>
-        <p>Name: {user?.name}</p>
-        <p>Surname: {user?.surname}</p>
-        <p>Email: {user?.email}</p>
-        <p>Token: {user?.token}</p>
-        <p>Expired: {jwtDecode(user?.token)?.expires}</p>
-        <p>Logged: {String(isLogged)}</p>
+        <Navigation />
+        <Container className="p-3">
+            <h1>Home</h1>
+        </Container>
         </>
     );
 };

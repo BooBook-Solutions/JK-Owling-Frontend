@@ -1,17 +1,24 @@
-// Login.jsx
 import React, { useEffect } from "react";
+import Container from 'react-bootstrap/Container';
+import { useNavigate } from "react-router-dom";
 
-import { Navigation } from "../components";
+import Navigation from "../Components/Common/Navbar";
 
-import { useAuth } from "../contexts/authContext";
+import { useAuthContext } from "../Components/Context/AuthContext";
 
-import "../assets/styles/auth.css";
+import "../Styles/auth.css";
 
 const Authentication = () => {
 
-    const { user, setUser, isLogged, setLogged } = useAuth();
+    const Navigate = useNavigate();
+    const { login } = useAuthContext();
 
-    const handleGoogleCredentialResponse = async (response) =>{
+    const handleLogin = (authUser) => {
+        login(authUser);
+        Navigate("/");
+    };
+
+    const handleGoogleCredentialResponse = (response) =>{
         fetch(process.env.REACT_APP_AUTH_ENDPOINT, { 
             method: 'POST',
             headers: {
@@ -22,13 +29,10 @@ const Authentication = () => {
         })
         .then((response) => { return response.json(); })
         .then((data) => { 
-            if(data?.user){
-                localStorage.setItem("user", JSON.stringify(data?.user));
-                localStorage.setItem("login", true);
-                window.location.reload();
-
+            if(data?.user)
+                handleLogin(data?.user);
+            else
                 throw new Error(data?.message || data);
-            }
         })
         .catch((error) => {
             console.log(error?.message);
@@ -53,18 +57,20 @@ const Authentication = () => {
                 shape: "pill",
             });
         }
-    }, [handleGoogleCredentialResponse]);
+    });
 
     return (
         <>
-        <Navigation ></Navigation>
-        <div className="centered-div">
-            <div>
-                <h1>Authenticate to continue</h1>
+        <Navigation />
+        <Container>
+            <div className="centered-div">
+                <div>
+                    <h1>Authenticate to continue</h1>
+                </div>
+                <div className="break"></div>
+                <div id="g_id_signin"></div>
             </div>
-            <div className="break"></div>
-            <div id="g_id_signin"></div>
-        </div>
+        </Container>
         </>
     );
 };
