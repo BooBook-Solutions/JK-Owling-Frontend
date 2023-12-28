@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -9,12 +8,11 @@ import { useAuthContext } from '../Context/AuthContext';
 
 function Navigation() {
 
-  const Navigate = useNavigate();
   const { authState, logout } = useAuthContext();
 
   const handleLogout = () => {
     logout();
-    Navigate("/authentication");
+    window.location.href="/authentication";
   };
 
   return (
@@ -27,6 +25,7 @@ function Navigation() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
+            <Nav.Link href="/catalogue">Catalogue</Nav.Link>
             { !authState.isAuth && <Nav.Link href="/authentication">Authentication</Nav.Link> }
           </Nav>
           { authState.isAuth && (
@@ -37,8 +36,8 @@ function Navigation() {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-                  <Dropdown.Item href="#/action-2">Orders</Dropdown.Item>
-                  { authState.user?.roles.includes("admin") && <Dropdown.Item href="/dashboard">Dashboard</Dropdown.Item>}
+                  <Dropdown.Item href="/orders">Orders</Dropdown.Item>
+                  { authState.user?.role.toLowerCase() === "admin" && <Dropdown.Item href="/dashboard">Dashboard</Dropdown.Item>}
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                 </Dropdown.Menu>
