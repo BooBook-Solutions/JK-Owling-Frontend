@@ -21,7 +21,7 @@ const Book = () => {
     const { data: bookData, error: bookError } = useFetch("http://localhost:8000/api/books/" + id);
 
     useEffect(() => {
-        if(bookData) { setBook(bookData.book); setFound(true); }
+        if(bookData) { setBook(bookData); setFound(true); }
         else setError(bookError);
     }, [bookData, bookError])
 
