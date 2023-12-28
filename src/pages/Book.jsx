@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from "react";
 import Container from 'react-bootstrap/Container';
+
+import { useParams } from 'react-router-dom';
 
 import Navigation from "../Components/Common/Navbar";
 import LoadingSpinner from "../Components/Common/Spinner";
@@ -8,21 +9,17 @@ import BookCard from "../Components/Card/BookCard";
 
 import ErrorPage from "./ErrorPage";
 
-import useFetch from "../Hooks/useAPIFetch";
+import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
 
 const Book = () => {
 
-    const { id } = useParams(); /* Use this to fetch the book details from backend API */
-    
-    const [book, setBook] = useState(null);
-    const [error, setError] = useState(null);
+    const { id } = useParams();
+    const { handleFetch: getBookDetails, data: book, error } = useAPIFetch({url: getUrl("BOOK_DETAILS", { bookId: id })});
 
-    const { data: details, error: detailsError } = useFetch(getUrl("BOOK_DETAILS", { bookId: id }));
-
-    useEffect(() => {
-        details ? setBook(details) : setError(detailsError);
-    }, [details, detailsError])
+    useEffect(() => { 
+        getBookDetails(); 
+    }, [])
 
     return (
         <>

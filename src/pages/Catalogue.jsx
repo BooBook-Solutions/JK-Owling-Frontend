@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import React, { useEffect } from "react";
+import Container from 'react-bootstrap/Container';
 
 import BookList from "../Components/Common/BookList";
 import Navigation from "../Components/Common/Navbar";
@@ -7,19 +7,16 @@ import LoadingSpinner from "../Components/Common/Spinner";
 
 import ErrorPage from "./ErrorPage";
 
-import useFetch from "../Hooks/useAPIFetch";
+import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
 
 function Catalogue(){
 
-  const [catalogue, setCatalogue] = useState(null);
-  const [error, setError] = useState(null);
-
-  const { data: books, error: booksError } = useFetch(getUrl("ALL_BOOKS"))
+  const { handleFetch: getBooks, data: catalogue, error } = useAPIFetch({url: getUrl("ALL_BOOKS")})
 
   useEffect(() => {
-    books ? setCatalogue(books) : setError(booksError);
-  }, [books, booksError])
+    getBooks();
+  }, [])
 
   return (
       <>

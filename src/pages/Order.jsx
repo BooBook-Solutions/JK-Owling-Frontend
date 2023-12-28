@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 
 import Navigation from "../Components/Common/Navbar";
@@ -9,21 +9,17 @@ import { useAuthContext } from "../Components/Context/AuthContext";
 
 import ErrorPage from "./ErrorPage";
 
-import useFetch from "../Hooks/useAPIFetch";
+import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
 
 const Order = () => {
 
     const { authState } = useAuthContext();
-
-    const [orders, setOrders] = useState(null);
-    const [error, setError] = useState(null);
-
-    const { data: userOrders, error: ordersError } = useFetch(getUrl("USER_ORDERS", { userId: authState.user.id }))
+    const { handleFetch: getUserOrders, data: orders, error } = useAPIFetch({url: getUrl("USER_ORDERS", { userId: authState.user.id })})
 
     useEffect(() => {
-        userOrders ? setOrders(userOrders) : setError(ordersError);
-    }, [userOrders, ordersError])
+        getUserOrders();
+    }, [])
 
     return (
         <>

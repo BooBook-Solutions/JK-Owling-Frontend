@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import React, { useEffect } from "react";
+import Container from 'react-bootstrap/Container';
 
 import Sidebar from "../Components/Dashboard/Sidebar";
 import UserList from "../Components/Dashboard/UserList";
@@ -8,37 +8,22 @@ import RoleList from "../Components/Dashboard/RoleList";
 import OrderList from "../Components/Common/OrderList";
 import LoadingSpinner from "../Components/Common/Spinner";
 
-import useFetch from "../Hooks/useAPIFetch";
+import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
 
 import "../Styles/dashboard.scss"
 
 function Dashboard(){
 
-  const [users, setUsers] = useState(null);
-  const [userError, setUserError] = useState(null);
-
-  const [books, setBooks] = useState(null);
-  const [bookError, setBookError] = useState(null);
-
-  const [orders, setOrders] = useState(null);
-  const [orderError, setOrderError] = useState(null);
-
-  const { data: userData, error: userDataError } = useFetch(getUrl("ALL_USERS"))
-  const { data: bookData, error: bookDataError } = useFetch(getUrl("ALL_BOOKS"))
-  const { data: orderData, error: orderDataError } = useFetch(getUrl("ALL_ORDERS"))
+  const { handleFetch: getUsers, data: users, error: userError } = useAPIFetch({url: getUrl("ALL_USERS")})
+  const { handleFetch: getBooks, data: books, error: bookError } = useAPIFetch({url: getUrl("ALL_BOOKS")})
+  const { handleFetch: getOrders, data: orders, error: orderError } = useAPIFetch({url: getUrl("ALL_ORDERS")})
 
   useEffect(() => {
-    userData ? setUsers(userData) : setUserError(userDataError);
-  }, [userData, userDataError])
-
-  useEffect(() => {
-    bookData ? setBooks(bookData) : setBookError(bookDataError);
-  }, [bookData, bookDataError])
-
-  useEffect(() => {
-    orderData ? setOrders(orderData) : setOrderError(orderDataError);
-  }, [orderData, orderDataError])
+    getUsers();
+    getBooks();
+    getOrders();
+  }, [])
 
   return (
     <>
@@ -90,7 +75,7 @@ function Dashboard(){
         </Container>
             
         { /* Modal to add place new order */ }
-        <Container id="orers" className="mt-5 mb-5">
+        <Container id="orders" className="mt-5 mb-5">
           <h1>Orders</h1>
           { !orders && !orderError ? (
               <LoadingSpinner />

@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Table, Button, Form } from 'react-bootstrap';
+import useAPIFetch from '../../Hooks/useAPIFetch';
+import getUrl from '../../Endpoints/endpoints';
+import { useEffect } from 'react';
 
 const RoleList = ({ users, page }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+  
   const [currentRolePage, setCurrentRolePage] = useState(1);
   const usersRolesPerPage = page >= users.length ? users.length : page;
 
@@ -15,9 +20,31 @@ const RoleList = ({ users, page }) => {
     setCurrentRolePage(pageNumber);
   };
 
-  const handleRoleChange = (email, role) => {
-    alert(email + " " + role);
+  const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
+    url: getUrl("UPDATE_USER", { userId: currentUser?.userId }), 
+    method: "PUT",
+    body: { role: currentUser?.userRole }
+  })
+
+  const handleRoleChange = (id, role) => {
+    setCurrentUser({userId: id, userRole: role})
   };
+
+  useEffect(() => {
+    if(currentUser) changeRole()
+  }, [currentUser])
+
+  useEffect(() => {
+    if(updatedUser){
+      alert(updatedUser.role);
+      window.location.reload();
+    }
+
+    if(userUpdateError){
+      alert("Something went wrong! Check console logs...");
+      console.error(userUpdateError);
+    }
+  }, [updatedUser, userUpdateError])
 
   return (
     <div>
@@ -35,7 +62,7 @@ const RoleList = ({ users, page }) => {
               <td>{user.id}</td>
               <td>{user.email}</td>
               <td>
-                <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.email, e.target.value)}>
+                <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
                     {roles.map((role) => (
                         <option value={role}>{role}</option>
                     ))}
