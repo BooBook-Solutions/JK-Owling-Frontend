@@ -1,52 +1,25 @@
 import React, { useEffect } from "react";
 import Container from 'react-bootstrap/Container';
-import { useNavigate } from "react-router-dom";
 
 import Navigation from "../Components/Common/Navbar";
 
-import { useAuthContext } from "../Components/Context/AuthContext";
+import useAuthFetch from "../Hooks/useAuthFetch";
 
-import "../Styles/auth.css";
+import "../Styles/style.css";
+import LoadingSpinner from "../Components/Common/Spinner";
 
 const Authentication = () => {
 
-    const Navigate = useNavigate();
-    const { login } = useAuthContext();
+    const { handleGoogle, loading, error } = useAuthFetch("http://localhost:8000/authenticate/login")
 
-    const handleLogin = (authUser) => {
-        login(authUser);
-        Navigate("/");
-    };
-
-    const handleGoogleCredentialResponse = (response) =>{
-        fetch(process.env.REACT_APP_AUTH_ENDPOINT, { 
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: 'include',
-            body: JSON.stringify({token: response.credential})
-        })
-        .then((response) => { return response.json(); })
-        .then((data) => { 
-            if(data?.user)
-                handleLogin(data?.user);
-            else
-                throw new Error(data?.message || data);
-        })
-        .catch((error) => {
-            console.log(error?.message);
-        });
-    }
-
-    // To avoid render issues, use useEffect Hook
+    // To avoid Google button render issues
     useEffect(() => {
         const google = window.google;
         
         if (google) {
             google.accounts.id.initialize({
                 client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-                callback: handleGoogleCredentialResponse
+                callback: handleGoogle
             });
 
             google.accounts.id.renderButton(document.getElementById("g_id_signin"), {
@@ -57,21 +30,17 @@ const Authentication = () => {
                 shape: "pill",
             });
         }
-    });
+    }, [handleGoogle]);
 
     return (
         <>
         <Navigation />
-        <Container>
-            <div className="centered-div">
-                <div>
-                    <h1>Authenticate to continue</h1>
-                </div>
-                <div className="break"></div>
-                <div id="g_id_signin"></div>
-            </div>
+        <Container className="centered-div">
+            { !loading && <h1>Authenticate to continue</h1> }
+            { error && <p style={{ color: "red" }}>{error}</p>}
+            { loading ? (<LoadingSpinner />) : (<div id="g_id_signin"></div>)}
         </Container>
-        </>
+        </> 
     );
 };
 
