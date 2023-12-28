@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuthContext } from "../Components/Context/AuthContext";
 
-const useFetch = (url, method="GET", body=null) => {
+const useAPIFetch = (url, method="GET", body=null) => {
 
     const { token } = useAuthContext();
     const [data, setData] = useState(null);
@@ -40,4 +40,4 @@ const useFetch = (url, method="GET", body=null) => {
     return { data, error }
 }
 
-export default useFetch;
+export default useAPIFetch;

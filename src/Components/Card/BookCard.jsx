@@ -25,7 +25,7 @@ function BookCard({ book, type }) {
       <Card.Body>
         <Card.Title>{book.title}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">{book.author}</Card.Subtitle>
-        { type != "catalogue" && <Card.Text>{book.description}</Card.Text> }
+        { type !== "catalogue" && <Card.Text>{book.description}</Card.Text> }
       </Card.Body>
       <Card.Footer><b>Price: </b>{book.price}</Card.Footer>
       { type !== "catalogue" && <Card.Footer><b>Quantity: </b>{book.quantity}</Card.Footer> }

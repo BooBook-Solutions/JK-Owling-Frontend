@@ -1,33 +1,43 @@
+import { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
+
 import BookList from "../Components/Common/BookList";
 import Navigation from "../Components/Common/Navbar";
-import { useEffect, useState } from "react";
-import useFetch from "../Hooks/useAPIFetch";
 import LoadingSpinner from "../Components/Common/Spinner";
+
+import ErrorPage from "./ErrorPage";
+
+import useFetch from "../Hooks/useAPIFetch";
+import getUrl from "../Endpoints/endpoints";
 
 function Catalogue(){
 
-  const [books, setBooks] = useState(null);
+  const [catalogue, setCatalogue] = useState(null);
+  const [error, setError] = useState(null);
 
-  const { data: bookData, error: bookError } = useFetch("http://localhost:8000/api/books")
+  const { data: books, error: booksError } = useFetch(getUrl("ALL_BOOKS"))
 
   useEffect(() => {
-    if(bookData) { setBooks(bookData.books); }
-  }, [bookData, bookError])
+    books ? setCatalogue(books) : setError(booksError);
+  }, [books, booksError])
 
   return (
-    <>
-    <Navigation />
-    <Container className="m-5">
-        { 
-          books ? (
-              books?.length > 0 ? <BookList books={books} page={8} pagination={"center"} type={"catalogue"}/> : "Empty"
+      <>
+      { !catalogue && !error ? (
+          <LoadingSpinner />
+      ) : (
+          error ? (
+              <ErrorPage eCode={error?.status} eText={error?.message} />
           ) : (
-              <LoadingSpinner />
+              <>
+                  <Navigation />
+                  <Container className="m-5">
+                      { catalogue?.length > 0 ? <BookList books={catalogue} page={8} pagination={"center"} type={"catalogue"}/> : "Empty" }
+                  </Container>
+              </>
           )
-        }
-    </Container>
-    </>
+      )}
+      </>
   );
 }
 

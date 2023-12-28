@@ -1,36 +1,35 @@
 import React, { useState, useEffect } from "react";
-import Container from 'react-bootstrap/Container';
 import { useParams } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
 
 import Navigation from "../Components/Common/Navbar";
-
-import useFetch from "../Hooks/useAPIFetch";
-
-import ErrorPage from "./ErrorPage";
 import LoadingSpinner from "../Components/Common/Spinner";
 import BookCard from "../Components/Card/BookCard";
+
+import ErrorPage from "./ErrorPage";
+
+import useFetch from "../Hooks/useAPIFetch";
+import getUrl from "../Endpoints/endpoints";
 
 const Book = () => {
 
     const { id } = useParams(); /* Use this to fetch the book details from backend API */
     
-    const [book, setBook] = useState({});
-    const [error, setError] = useState({});
-    const [found, setFound] = useState(false);
+    const [book, setBook] = useState(null);
+    const [error, setError] = useState(null);
 
-    const { data: bookData, error: bookError } = useFetch("http://localhost:8000/api/books/" + id);
+    const { data: details, error: detailsError } = useFetch(getUrl("BOOK_DETAILS", { bookId: id }));
 
     useEffect(() => {
-        if(bookData) { setBook(bookData); setFound(true); }
-        else setError(bookError);
-    }, [bookData, bookError])
+        details ? setBook(details) : setError(detailsError);
+    }, [details, detailsError])
 
     return (
         <>
-        { !bookData && !bookError ? (
+        { !book && !error ? (
             <LoadingSpinner />
         ) : (
-            !found ? (
+            error ? (
                 <ErrorPage eCode={error?.status} eText={error?.message} />
             ) : (
                 <>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthContext } from "../Components/Context/AuthContext";
 
-const useAuthFetch = (url, redirect) => {
+const useAuthFetch = (url) => {
 
     const { login } = useAuthContext();
 
@@ -25,8 +25,8 @@ const useAuthFetch = (url, redirect) => {
             return response.json(); 
         })
         .then((data) => { 
-            if(data?.token){
-                handleLogin(data?.token);
+            if(data){
+                handleLogin(data);
                 window.location.reload();
             }
             
