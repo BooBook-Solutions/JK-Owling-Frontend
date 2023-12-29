@@ -15,9 +15,15 @@ import "../Styles/dashboard.scss"
 
 function Dashboard(){
 
-  const { handleFetch: getUsers, data: users, error: userError } = useAPIFetch({url: getUrl("ALL_USERS")})
-  const { handleFetch: getBooks, data: books, error: bookError } = useAPIFetch({url: getUrl("ALL_BOOKS")})
-  const { handleFetch: getOrders, data: orders, error: orderError } = useAPIFetch({url: getUrl("ALL_ORDERS")})
+  const { handleFetch: getUsers, data: users, error: userError } = useAPIFetch({
+    url: getUrl({ endpoint: "USERS" })
+  })
+  const { handleFetch: getBooks, data: books, error: bookError } = useAPIFetch({
+    url: getUrl({ endpoint: "BOOKS" })
+  })
+  const { handleFetch: getOrders, data: orders, error: orderError } = useAPIFetch({
+    url: getUrl({ endpoint: "ORDERS" })
+  })
 
   useEffect(() => {
     getUsers();
@@ -42,7 +48,7 @@ function Dashboard(){
               userError ? (
                 <p>{userError?.message}</p>
               ) : (
-                users.length > 0 ? <UserList users={users} page={6}/> : "Empty" 
+                users.length > 0 ? <UserList users={users} pageItems={6}/> : "Empty" 
               )
           )}
         </Container>
@@ -55,7 +61,7 @@ function Dashboard(){
               userError ? (
                 <p>{userError?.message}</p>
               ) : (
-                users.length > 0 ? <RoleList users={users} page={8}/> : "Empty" 
+                users.length > 0 ? <RoleList users={users} pageItems={8}/> : "Empty" 
               )
           )}
         </Container>
@@ -69,7 +75,7 @@ function Dashboard(){
                bookError ? (
                 <p>{bookError?.message}</p>
               ) : (
-                books.length > 0 ?<BookList books={books} page={6} pagination={"left"} type={"dashboard"} /> : "Empty" 
+                books.length > 0 ?<BookList books={books} pageItems={6} pagination={"left"} type={"dashboard"} /> : "Empty" 
               )
           )}
         </Container>
@@ -83,7 +89,7 @@ function Dashboard(){
                orderError ? (
                 <p>{orderError?.message}</p>
               ) : (
-                orders.length > 0 ? <OrderList orders={orders} page={8} type={"dashboard"} /> : "Empty" 
+                orders.length > 0 ? <OrderList orders={orders} pageItems={8} type={"dashboard"} /> : "Empty" 
               )
           )}
         </Container>

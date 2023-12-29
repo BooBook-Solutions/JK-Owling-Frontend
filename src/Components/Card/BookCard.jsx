@@ -13,12 +13,15 @@ function BookCard({ book, type }) {
   const { authState } = useAuthContext();
 
   const { handleFetch: deleteBook, data: deletedBook, error: bookDeleteError } = useAPIFetch({
-    url: getUrl("DELETE_BOOK", { bookId: book.id }), 
+    url: getUrl({ 
+      endpoint: "BOOK_DETAILS", 
+      pathParams: { bookId: book.id }
+    }), 
     method: "DELETE"
   })
 
   const { handleFetch: orderBook, data: orderedBook, error: bookOrderError } = useAPIFetch({
-    url: getUrl("PLACE_ORDER"), 
+    url: getUrl({ endpoint: "ORDERS" }), 
     method: "POST", 
     body: book
   })

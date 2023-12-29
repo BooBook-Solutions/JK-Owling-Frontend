@@ -9,7 +9,10 @@ import getUrl from '../../Endpoints/endpoints';
 function UserCard({ user }) {
 
   const { handleFetch: deleteUser, data: deletedUser, error } = useAPIFetch({
-    url: getUrl("DELETE_USER", { userId: user.id }), 
+    url: getUrl({ 
+      endpoint: "USER_DETAILS", 
+      pathParams: { userId: user.id }
+    }), 
     method: "DELETE"
   })
 

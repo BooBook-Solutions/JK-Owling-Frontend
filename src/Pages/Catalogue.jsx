@@ -12,30 +12,32 @@ import getUrl from "../Endpoints/endpoints";
 
 function Catalogue(){
 
-  const { handleFetch: getBooks, data: catalogue, error } = useAPIFetch({url: getUrl("ALL_BOOKS")})
+    const { handleFetch: getBooks, data: catalogue, error } = useAPIFetch({
+        url: getUrl({ endpoint: "BOOKS" })
+    })
 
-  useEffect(() => {
-    getBooks();
-  }, [])
+    useEffect(() => {
+        getBooks();
+    }, [])
 
-  return (
-      <>
-      { !catalogue && !error ? (
-          <LoadingSpinner />
-      ) : (
-          error ? (
-              <ErrorPage eCode={error?.status} eText={error?.message} />
-          ) : (
-              <>
-                  <Navigation />
-                  <Container className="m-5">
-                      { catalogue?.length > 0 ? <BookList books={catalogue} page={8} pagination={"center"} type={"catalogue"}/> : "Empty" }
-                  </Container>
-              </>
-          )
-      )}
-      </>
-  );
+    return (
+        <>
+        { !catalogue && !error ? (
+            <LoadingSpinner />
+        ) : (
+            error ? (
+                <ErrorPage eCode={error?.status} eText={error?.message} />
+            ) : (
+                <>
+                    <Navigation />
+                    <Container className="m-5">
+                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "Empty" }
+                    </Container>
+                </>
+            )
+        )}
+        </>
+    );
 }
 
 export default Catalogue;

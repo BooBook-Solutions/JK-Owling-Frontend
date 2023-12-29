@@ -15,7 +15,13 @@ import getUrl from "../Endpoints/endpoints";
 const Order = () => {
 
     const { authState } = useAuthContext();
-    const { handleFetch: getUserOrders, data: orders, error } = useAPIFetch({url: getUrl("USER_ORDERS", { userId: authState.user.id })})
+    
+    const { handleFetch: getUserOrders, data: orders, error } = useAPIFetch({
+        url: getUrl({ 
+            endpoint: "ORDERS", 
+            queryParams: { user_id: authState.user.id }
+        })
+    })
 
     useEffect(() => {
         getUserOrders();
@@ -34,7 +40,7 @@ const Order = () => {
                     <Container className="p-3">
                         <Container id="orders" className="mt-5 mb-5">
                             <h1>Orders</h1>
-                            { orders.length > 0 ? <OrderList orders={orders} page={8} type={"user_orders"} /> : "Empty" }
+                            { orders.length > 0 ? <OrderList orders={orders} pageItems={8} type={"user_orders"} /> : "Empty" }
                         </Container>
                     </Container>
                 </>

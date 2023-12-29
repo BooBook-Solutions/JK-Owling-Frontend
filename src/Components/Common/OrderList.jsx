@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Table, Button } from 'react-bootstrap';
+import PageManager from './PageManager';
 
-const OrderList = ({ orders, page, type }) => {
-  const [currentOrderPage, setCurrentOrderPage] = useState(1);
-  const ordersPerPage = page >= orders.length ? orders.length : page;
-
-  const indexOfLastUser = currentOrderPage * ordersPerPage;
-  const indexOfFirstUser = indexOfLastUser - ordersPerPage;
-  const currentOrders = orders.slice(indexOfFirstUser, indexOfLastUser);
-
-  const paginate = (pageNumber) => {
-    setCurrentOrderPage(pageNumber);
-  };
+const OrderList = ({ orders, pageItems, type }) => {
+  
+  const { pageManager, currentItems: currentOrders} = PageManager(orders, pageItems)
 
   const confirmOrder = (orderId) => {
     alert(orderId + " confirmed!")
@@ -54,15 +47,7 @@ const OrderList = ({ orders, page, type }) => {
           ))}
         </tbody>
       </Table>
-      { orders.length > page && <div className="pagination">
-        <Button variant="primary" onClick={() => paginate(currentOrderPage - 1)} disabled={currentOrderPage === 1}>
-          Previous
-        </Button>
-        <span className="mx-2" style={{display: "flex", alignItems: "center"}}>{currentOrderPage}</span>
-        <Button variant="primary" onClick={() => paginate(currentOrderPage + 1)} disabled={indexOfLastUser >= orders.length}>
-          Next
-        </Button>
-      </div> }
+      { pageManager }
     </div>
     </>
   );

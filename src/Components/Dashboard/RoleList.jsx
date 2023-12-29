@@ -1,27 +1,24 @@
-import React, { useState } from 'react';
-import { Table, Button, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Table, Form } from 'react-bootstrap';
+
+import PageManager from '../Common/PageManager';
+
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
-import { useEffect } from 'react';
 
-const RoleList = ({ users, page }) => {
+const RoleList = ({ users, pageItems }) => {
+
+  const roles = ["Admin", "Member"] // Need to get this from API
+
   const [currentUser, setCurrentUser] = useState(null);
-  
-  const [currentRolePage, setCurrentRolePage] = useState(1);
-  const usersRolesPerPage = page >= users.length ? users.length : page;
 
-  const indexOfLastUser = currentRolePage * usersRolesPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersRolesPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
-
-  const roles = ["Admin", "Member"];
-
-  const paginate = (pageNumber) => {
-    setCurrentRolePage(pageNumber);
-  };
+  const { pageManager, currentItems: currentUsers} = PageManager(users, pageItems)
 
   const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
-    url: getUrl("UPDATE_USER", { userId: currentUser?.userId }), 
+    url: getUrl({ 
+      endpoint: "USER_DETAILS", 
+      pathParams: { userId: currentUser?.userId }
+    }), 
     method: "PUT",
     body: { role: currentUser?.userRole }
   })
@@ -57,7 +54,7 @@ const RoleList = ({ users, page }) => {
           </tr>
         </thead>
         <tbody>
-          {currentUsers.map((user) => (
+          {currentUsers?.map((user) => (
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.email}</td>
@@ -72,15 +69,7 @@ const RoleList = ({ users, page }) => {
           ))}
         </tbody>
       </Table>
-      { users.length > page && <div className="pagination">
-        <Button variant="primary" onClick={() => paginate(currentRolePage - 1)} disabled={currentRolePage === 1}>
-          Previous
-        </Button>
-        <span className="mx-2" style={{display: "flex", alignItems: "center"}}>{currentRolePage}</span>
-        <Button variant="primary" onClick={() => paginate(currentRolePage + 1)} disabled={indexOfLastUser >= users.length}>
-          Next
-        </Button>
-      </div> }
+      { pageManager }
     </div>
   );
 };

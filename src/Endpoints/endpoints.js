@@ -1,35 +1,39 @@
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const endpoints = {
-    /* GET ENDPOINTS */
-    ALL_USERS: () => "/users",
-    ALL_BOOKS: () => "/books",
-    ALL_ORDERS: () => "/orders",
+    AUTHENTICATION: () => "/authentication/login",
+    USERS: () => "/users",
+    BOOKS: () => "/books",
+    ORDERS: () => "/orders",
     USER_DETAILS: (params) => `/users/${params?.userId}`,
     BOOK_DETAILS: (params) => `/books/${params?.bookId}`,
-    USER_ORDERS: (params) => `/users/${params?.userId}/orders`,
-
-    /* POST ENDPOINTS */
-    AUTHENTICATION: () => "/authenticate/login",
-    PLACE_ORDER: () => "/orders",
-
-    /* PUT ENDPOINTS */
-    UPDATE_USER: (params) => `/users/${params?.userId}`,
-
-    /* DELETE ENDPOINTS */
-    DELETE_USER: (params) => `/users/${params?.userId}/delete`,
-    DELETE_BOOK: (params) => `/books/${params?.bookId}/delete`,
+    ORDER_DETAILS: (params) => `/orders/${params?.orderId}`,
 };
 
-const getUrl = (endpoint, params={}) => {
+const getUrl = ({ endpoint, pathParams={}, queryParams={} }) => {
     const endpointFunction = endpoints[endpoint];
   
-    if (!endpointFunction) {
+    if(!endpointFunction){
         console.error(`Endpoint "${endpoint}" not found.`);
         return null;
     }
   
-    const endpointPath = endpointFunction(params);
+    var endpointPath = endpointFunction(pathParams);
+
+    if(endpointPath.includes("undefined")){
+        console.error(`Path parameters for "${endpoint}" aren't defined, but still requested!`);
+        return null;
+    }
+
+    if(queryParams){
+        const queryString = Object.keys(queryParams)
+        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(queryParams[key]))
+        .join('&');
+
+        if(queryString)
+            endpointPath += "?" + queryString; 
+    }
+
     return `${BACKEND_URL}${endpointPath}`;
   };
   

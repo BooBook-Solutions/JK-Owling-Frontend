@@ -15,10 +15,15 @@ import getUrl from "../Endpoints/endpoints";
 const Book = () => {
 
     const { id } = useParams();
-    const { handleFetch: getBookDetails, data: book, error } = useAPIFetch({url: getUrl("BOOK_DETAILS", { bookId: id })});
+    const { handleFetch: getBookDetails, data: book, error } = useAPIFetch({
+        url: getUrl({ 
+            endpoint: "BOOK_DETAILS", 
+            pathParams: { bookId: id }
+        })
+    });
 
     useEffect(() => { 
-        getBookDetails(); 
+        getBookDetails();
     }, [])
 
     return (

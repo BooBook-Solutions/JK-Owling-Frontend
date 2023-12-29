@@ -25,8 +25,8 @@ const useAuthFetch = (url) => {
             return response.json(); 
         })
         .then((data) => { 
-            if(data){
-                handleLogin(data);
+            if(data?.token){
+                handleLogin(data?.token);
                 window.location.reload();
             }
             
