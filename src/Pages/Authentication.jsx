@@ -11,7 +11,7 @@ import "../Styles/style.css";
 
 const Authentication = () => {
 
-    const { handleGoogle, loading, error } = useAuthFetch(getUrl("AUTHENTICATION"))
+    const { handleGoogle, loading, error } = useAuthFetch(getUrl({ endpoint: "AUTHENTICATION"}))
 
     // To avoid Google button render issues
     useEffect(() => {

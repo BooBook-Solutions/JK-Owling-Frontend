@@ -38,8 +38,8 @@ function UserCard({ user }) {
       </Card.Body>
       <Card.Footer><b>Role: </b>{user.role}</Card.Footer>
       <Card.Footer>
-        <UserModal userInfo={user}/> { /* Does it make any sense? Data is retrieved from Google... */ }
-        <Button variant="danger" style={{ marginLeft: '10px' }} onClick={deleteUser}>Delete</Button>
+        { /* <UserModal userInfo={user}/> */ } { /* Does it make any sense? Data is retrieved from Google... */ }
+        <Button variant="danger" onClick={deleteUser}>Delete</Button>
       </Card.Footer>
     </Card>
   );

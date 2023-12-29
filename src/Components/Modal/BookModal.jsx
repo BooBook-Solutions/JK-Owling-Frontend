@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import useAPIFetch from '../../Hooks/useAPIFetch';
+import getUrl from '../../Endpoints/endpoints';
 
 function BookModal({ book }) {
 
@@ -32,20 +34,32 @@ function BookModal({ book }) {
         setShow(true);
     }
 
+    const { handleFetch: updateBook, data: updatedBook, error: bookUpdateError } = useAPIFetch({
+        url: getUrl({ 
+          endpoint: "BOOK_DETAILS", 
+          pathParams: { bookId: book.id }
+        }), 
+        method: "PUT",
+        body: { title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
+    })
+
     const handleSaveChanges = () => {
-        if (!title || !author || !description || !cover || !price || !quantity)
+        if (![title, author, description, cover, price, quantity].every(Boolean)) {
             alert("Please fill in all fields");
-        else if (title === book.title && 
-                author === book.author && 
-                description === book.description && 
-                cover === book.cover && 
-                price === book.price &&
-                quantity === book.quantity
-        )
-            alert("No changes detectd")
-        else
-            alert("User updated: " + title + ", " + author + ", " + price);
-    }
+        } else { updateBook(); }
+    };
+
+    useEffect(() => {
+        if(updatedBook){
+            alert(JSON.stringify(updatedBook));
+            window.location.reload();
+        }
+    
+        if(bookUpdateError){
+            alert("Something went wrong! Check console logs...");
+            console.error(bookUpdateError);
+        }
+    }, [updateBook, bookUpdateError]);
 
     return (
         <>
