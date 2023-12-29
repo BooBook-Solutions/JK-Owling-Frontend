@@ -31,6 +31,7 @@ function Catalogue(){
                 <>
                     <Navigation />
                     <Container className="m-5">
+                        <h1>Catalogue</h1>
                         { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "Empty" }
                     </Container>
                 </>

@@ -5,14 +5,17 @@ import PageManager from '../Common/PageManager';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import SearchBar from '../Common/SearchBar';
 
 const RoleList = ({ users, pageItems }) => {
 
-  const roles = ["Admin", "Member"] // Need to get this from API
+  const roles = ["admin", "user"] // Need to get this from API
 
   const [currentUser, setCurrentUser] = useState(null);
 
-  const { pageManager, currentItems: currentUsers} = PageManager(users, pageItems)
+  const [filteredUsers, setFilteredUsers] = useState(users);
+
+  const { pageManager, currentItems: currentUsers } = PageManager(filteredUsers, pageItems);
 
   const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
     url: getUrl({ 
@@ -45,6 +48,7 @@ const RoleList = ({ users, pageItems }) => {
 
   return (
     <div>
+      <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
       <Table striped bordered hover>
         <thead>
           <tr>

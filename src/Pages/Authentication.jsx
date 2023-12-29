@@ -15,21 +15,34 @@ const Authentication = () => {
 
     // To avoid Google button render issues
     useEffect(() => {
-        const google = window.google;
-        
-        if (google) {
-            google.accounts.id.initialize({
-                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-                callback: handleGoogle
-            });
+        const loadGoogleClient = () => {
+            const google = window.google;
+            
+            if (google && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+                    callback: handleGoogle
+                });
 
-            google.accounts.id.renderButton(document.getElementById("g_id_signin"), {
-                // type: "standard",
-                theme: "filled_black",
-                // size: "small",
-                text: "continue_with",
-                shape: "pill"
-            });
+                google.accounts.id.renderButton(document.getElementById("g_id_signin"), {
+                    // type: "standard",
+                    theme: "filled_black",
+                    // size: "small",
+                    text: "continue_with",
+                    shape: "pill"
+                });
+            }
+        }
+
+        // Check if the Google API is already loaded
+        if (window.google && window.google.accounts) {
+            loadGoogleClient();
+        } else {
+            // If not loaded, load the Google API dynamically
+            const script = document.createElement("script");
+            script.src = "https://accounts.google.com/gsi/client";
+            script.onload = loadGoogleClient;
+            document.head.appendChild(script);
         }
     }, [handleGoogle]);
 
