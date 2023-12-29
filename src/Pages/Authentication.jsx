@@ -2,15 +2,16 @@ import React, { useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 
 import Navigation from "../Components/Common/Navbar";
+import LoadingSpinner from "../Components/Common/Spinner";
 
 import useAuthFetch from "../Hooks/useAuthFetch";
+import getUrl from "../Endpoints/endpoints";
 
 import "../Styles/style.css";
-import LoadingSpinner from "../Components/Common/Spinner";
 
 const Authentication = () => {
 
-    const { handleGoogle, loading, error } = useAuthFetch("http://localhost:8000/authenticate/login")
+    const { handleGoogle, loading, error } = useAuthFetch(getUrl({ endpoint: "AUTHENTICATION"}))
 
     // To avoid Google button render issues
     useEffect(() => {
@@ -27,7 +28,7 @@ const Authentication = () => {
                 theme: "filled_black",
                 // size: "small",
                 text: "continue_with",
-                shape: "pill",
+                shape: "pill"
             });
         }
     }, [handleGoogle]);

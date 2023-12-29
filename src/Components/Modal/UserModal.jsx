@@ -30,13 +30,12 @@ function UserModal({ userInfo }) {
     }
 
     const handleSaveChanges = () => {
-        if (!email || !name || !surname)
+        if (![email, name, surname].every(Boolean)) {
             alert("Please fill in all fields");
-        else if (email === user.email && name === user.name && surname === user.surname)
-            alert("No changes detectd")
-        else
-            alert("User updated: " + email + ", " + name + ", " + surname);
-    }
+        } else {
+            alert("Update");
+        }
+    };
 
     return (
         <>

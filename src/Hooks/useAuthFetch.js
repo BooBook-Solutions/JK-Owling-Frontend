@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthContext } from "../Components/Context/AuthContext";
 
-const useAuthFetch = (url, redirect) => {
+const useAuthFetch = (url) => {
 
     const { login } = useAuthContext();
 

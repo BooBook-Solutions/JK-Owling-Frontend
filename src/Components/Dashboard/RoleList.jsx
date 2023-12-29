@@ -1,23 +1,47 @@
-import React, { useState } from 'react';
-import { Table, Button, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Table, Form } from 'react-bootstrap';
 
-const RoleList = ({ users, page }) => {
-  const [currentRolePage, setCurrentRolePage] = useState(1);
-  const usersRolesPerPage = page >= users.length ? users.length : page;
+import PageManager from '../Common/PageManager';
 
-  const indexOfLastUser = currentRolePage * usersRolesPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersRolesPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+import useAPIFetch from '../../Hooks/useAPIFetch';
+import getUrl from '../../Endpoints/endpoints';
 
-  const roles = ["Admin", "Member"];
+const RoleList = ({ users, pageItems }) => {
 
-  const paginate = (pageNumber) => {
-    setCurrentRolePage(pageNumber);
+  const roles = ["Admin", "Member"] // Need to get this from API
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const { pageManager, currentItems: currentUsers} = PageManager(users, pageItems)
+
+  const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
+    url: getUrl({ 
+      endpoint: "USER_DETAILS", 
+      pathParams: { userId: currentUser?.userId }
+    }), 
+    method: "PUT",
+    body: { role: currentUser?.userRole }
+  })
+
+  const handleRoleChange = (id, role) => {
+    setCurrentUser({userId: id, userRole: role})
   };
 
-  const handleRoleChange = (email, role) => {
-    alert(email + " " + role);
-  };
+  useEffect(() => {
+    if(currentUser) changeRole()
+  }, [currentUser])
+
+  useEffect(() => {
+    if(updatedUser){
+      alert(updatedUser.role);
+      window.location.reload();
+    }
+
+    if(userUpdateError){
+      alert("Something went wrong! Check console logs...");
+      console.error(userUpdateError);
+    }
+  }, [updatedUser, userUpdateError])
 
   return (
     <div>
@@ -30,12 +54,12 @@ const RoleList = ({ users, page }) => {
           </tr>
         </thead>
         <tbody>
-          {currentUsers.map((user) => (
+          {currentUsers?.map((user) => (
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.email}</td>
               <td>
-                <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.email, e.target.value)}>
+                <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
                     {roles.map((role) => (
                         <option value={role}>{role}</option>
                     ))}
@@ -45,15 +69,7 @@ const RoleList = ({ users, page }) => {
           ))}
         </tbody>
       </Table>
-      { users.length > page && <div className="pagination">
-        <Button variant="primary" onClick={() => paginate(currentRolePage - 1)} disabled={currentRolePage === 1}>
-          Previous
-        </Button>
-        <span className="mx-2" style={{display: "flex", alignItems: "center"}}>{currentRolePage}</span>
-        <Button variant="primary" onClick={() => paginate(currentRolePage + 1)} disabled={indexOfLastUser >= users.length}>
-          Next
-        </Button>
-      </div> }
+      { pageManager }
     </div>
   );
 };

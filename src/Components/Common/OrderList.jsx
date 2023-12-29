@@ -1,25 +1,44 @@
-import React, { useState } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Table, Form } from 'react-bootstrap';
+import PageManager from './PageManager';
+import useAPIFetch from '../../Hooks/useAPIFetch';
+import getUrl from '../../Endpoints/endpoints';
 
-const OrderList = ({ orders, page, type }) => {
-  const [currentOrderPage, setCurrentOrderPage] = useState(1);
-  const ordersPerPage = page >= orders.length ? orders.length : page;
+const OrderList = ({ orders, pageItems, type }) => {
 
-  const indexOfLastUser = currentOrderPage * ordersPerPage;
-  const indexOfFirstUser = indexOfLastUser - ordersPerPage;
-  const currentOrders = orders.slice(indexOfFirstUser, indexOfLastUser);
+  const statuses = ["Pending", "Confirmed", "Rejected"] // Need to get this from API
+  
+  const [currentOrder, setCurrentOrder] = useState(null);
+  const { pageManager, currentItems: currentOrders} = PageManager(orders, pageItems)
 
-  const paginate = (pageNumber) => {
-    setCurrentOrderPage(pageNumber);
+  const { handleFetch: changeStatus, data: updatedOrder, error: orderUpdateError } = useAPIFetch({
+    url: getUrl({ 
+      endpoint: "ORDER_DETAILS", 
+      pathParams: { orderId: currentOrder?.orderId }
+    }), 
+    method: "PUT",
+    body: { status: currentOrder?.orderStatus }
+  })
+
+  const handleStatusChange = (id, status) => {
+    setCurrentOrder({orderId: id, orderStatus: status})
   };
 
-  const confirmOrder = (orderId) => {
-    alert(orderId + " confirmed!")
-  };
+  useEffect(() => {
+    if(currentOrder) changeStatus()
+  }, [currentOrder])
 
-  const rejectOrder = (orderId) => {
-    alert(orderId + " deleted!")
-  };
+  useEffect(() => {
+    if(updatedOrder){
+      alert(updatedOrder.status);
+      window.location.reload();
+    }
+
+    if(orderUpdateError){
+      alert("Something went wrong! Check console logs...");
+      console.error(orderUpdateError);
+    }
+  }, [updatedOrder, orderUpdateError])
 
   return (
     <>
@@ -30,7 +49,7 @@ const OrderList = ({ orders, page, type }) => {
             <th>Order ID</th>
             <th>User ID</th>
             <th>Book ID</th>
-            <th>{ type === "dashboard" ? "Actions" : "Status" }</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -42,10 +61,11 @@ const OrderList = ({ orders, page, type }) => {
               <td>
                 { /* pop up with update / confirm / reject => if update then modal with changes */ }
                 { type === "dashboard" ? (
-                  <div>
-                    <Button variant="primary" onClick={() => confirmOrder(order.id)}>Confirm</Button>
-                    <Button variant="danger" style={{ marginLeft: '10px' }} onClick={() => rejectOrder(order.id)}>Reject</Button>
-                  </div>
+                  <Form.Control as="select" defaultValue={order.status} onChange={(e) => handleStatusChange(order.id, e.target.value)}>
+                      {statuses.map((status) => (
+                          <option value={status}>{status}</option>
+                      ))}
+                  </Form.Control>
                 ) : (
                   <p>{order.status}</p>
                 )}
@@ -54,15 +74,7 @@ const OrderList = ({ orders, page, type }) => {
           ))}
         </tbody>
       </Table>
-      { orders.length > page && <div className="pagination">
-        <Button variant="primary" onClick={() => paginate(currentOrderPage - 1)} disabled={currentOrderPage === 1}>
-          Previous
-        </Button>
-        <span className="mx-2" style={{display: "flex", alignItems: "center"}}>{currentOrderPage}</span>
-        <Button variant="primary" onClick={() => paginate(currentOrderPage + 1)} disabled={indexOfLastUser >= orders.length}>
-          Next
-        </Button>
-      </div> }
+      { pageManager }
     </div>
     </>
   );
