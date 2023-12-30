@@ -53,6 +53,7 @@ const OrderList = ({ orders, pageItems, type }) => {
             <th>Order ID</th>
             <th>User ID</th>
             <th>Book ID</th>
+            <th>Quantity</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -62,6 +63,7 @@ const OrderList = ({ orders, pageItems, type }) => {
               <td>{order.id}</td>
               <td>{order.user_id}</td>
               <td>{order.book_id}</td>
+              <td>{order.quantity}</td>
               <td>
                 { /* pop up with update / confirm / reject => if update then modal with changes */ }
                 { type === "dashboard" ? (
