@@ -63,7 +63,7 @@ function Dashboard(){
               userError ? (
                 <p>{userError?.message}</p>
               ) : (
-                users.length > 0 ? <RoleList users={users} pageItems={8}/> : "Empty" 
+                users.length > 0 ? <RoleList users={users} pageItems={6}/> : "Empty" 
               )
           )}
         </Container>
@@ -97,7 +97,7 @@ function Dashboard(){
                orderError ? (
                 <p>{orderError?.message}</p>
               ) : (
-                orders.length > 0 ? <OrderList orders={orders} pageItems={8} type={"dashboard"} /> : "Empty" 
+                orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"dashboard"} /> : "Empty" 
               )
           )}
         </Container>
