@@ -27,7 +27,20 @@ function BookCard({ book, type }) {
   })
 
   const handleOrder = () => {
-    if(authState.isAuth) orderBook();
+    if(book.quantity === 0) alert("Book out of stock!");
+    else if(authState.isAuth) {
+      const quantity = prompt('Enter the quantity:');
+
+      if(quantity === null) return;
+      
+      const parsedQuantity = parseInt(quantity, 10);
+
+      if(!isNaN(parsedQuantity) && parsedQuantity > 0 && parsedQuantity <= book.quantity) {
+        book.quantity = parsedQuantity;
+        orderBook();
+      }
+      else alert("Invalid quantity!");
+    }
     else window.location.href = "/authentication";
   }
 
@@ -64,8 +77,8 @@ function BookCard({ book, type }) {
         <Card.Subtitle><b>ID: </b>{book.id}</Card.Subtitle>
         { type !== "catalogue" && type !== "dashboard" && <Card.Text>{book.description}</Card.Text> }
       </Card.Body>
-      <Card.Footer><b>Price: </b>{book.price}</Card.Footer>
-      { type !== "catalogue" && <Card.Footer><b>Quantity: </b>{book.quantity}</Card.Footer> }
+      <Card.Footer><b>Price: </b>{book.price}€</Card.Footer>
+      { type !== "catalogue" && <Card.Footer><b>Quantity: </b>{book.quantity > 0 ? book.quantity : "-"}</Card.Footer> }
       <Card.Footer>
         { type === "dashboard" ? (
             <>

@@ -9,6 +9,13 @@ function BookModal({ book }) {
 
     const [show, setShow] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = 3;
+
+    // Function to handle next and previous page
+    const handleNextPage = () => setCurrentPage(currentPage + 1);
+    const handlePrevPage = () => setCurrentPage(currentPage - 1);
+
     const [title, setTitle] = useState(book ? book.title : "");
     const [author, setAuthor] = useState(book ? book.author : "");
     const [description, setDescription] = useState(book ? book.description : "");
@@ -87,36 +94,54 @@ function BookModal({ book }) {
             </Modal.Header>
             <Modal.Body>
             <Form>
-                <Form.Group className="mb-3">
-                    <Form.Label>Title</Form.Label>
-                    <Form.Control type="text" placeholder="title" defaultValue={title} onChange={handleTitleChange} autoFocus/>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Author</Form.Label>
-                    <Form.Control type="text" placeholder="author" defaultValue={author} onChange={handleAuthorChange} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control as="textarea" placeholder="description" defaultValue={description} onChange={handleDescriptionChange} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Cover</Form.Label>
-                    <Form.Control type="text" placeholder="cover link" defaultValue={cover} onChange={handleCoverChange} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Price</Form.Label>
-                    <Form.Control type="number" placeholder="price" defaultValue={price} onChange={handlePriceChange} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Quantity</Form.Label>
-                    <Form.Control type="number" placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
-                </Form.Group>
+                { currentPage === 1 &&
+                    <>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control type="text" placeholder="title" defaultValue={title} onChange={handleTitleChange} autoFocus/>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Author</Form.Label>
+                        <Form.Control type="text" placeholder="author" defaultValue={author} onChange={handleAuthorChange} />
+                    </Form.Group>
+                    </>
+                }
+                { currentPage === 2 &&
+                    <>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control as="textarea" placeholder="description" defaultValue={description} onChange={handleDescriptionChange} />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Cover</Form.Label>
+                        <Form.Control type="text" placeholder="cover link" defaultValue={cover} onChange={handleCoverChange} />
+                    </Form.Group>
+                    </>
+                }
+                { currentPage === 3 &&
+                    <>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Price</Form.Label>
+                        <Form.Control type="number" placeholder="price" defaultValue={price} onChange={handlePriceChange} />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Quantity</Form.Label>
+                        <Form.Control type="number" placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                    </Form.Group>
+                    </>
+                }
             </Form>
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>Close</Button>
-                { book && <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button> }
-                { !book && <Button variant="primary" onClick={handleSaveChanges}>Create Book</Button> }
+            <Modal.Footer className="d-flex justify-content-between">
+                <div>
+                    {currentPage > 1 && <Button variant="dark" style={{marginRight: "5px"}} onClick={handlePrevPage}>Previous</Button>}
+                    {currentPage < totalPages && <Button variant="dark" onClick={handleNextPage}>Next</Button>}
+                </div>
+                <div>
+                    <Button variant="secondary" style={{marginRight: "5px"}} onClick={handleClose}>Close</Button>
+                    { book && <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button> }
+                    { !book && <Button variant="primary" onClick={handleSaveChanges}>Create Book</Button> }
+                </div>
             </Modal.Footer>
         </Modal>
         </>

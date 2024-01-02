@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
+import { Button } from "react-bootstrap";
 
 import "../Styles/style.css";
 
@@ -17,7 +18,7 @@ function ErrorPage({ eCode, eText}) {
             <div style={{textAlign: "center"}}>
                 <h1>{code}</h1>
                 <h3>{message}</h3>
-                <button onClick={goBack}>Go back</button>
+                <Button variant="link" onClick={goBack}>Go back</Button>
             </div>
             <br></br>
         </div>
