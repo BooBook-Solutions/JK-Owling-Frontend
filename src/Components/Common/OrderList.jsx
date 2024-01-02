@@ -10,6 +10,7 @@ const OrderList = ({ orders, pageItems, type }) => {
   const statuses = ["pending", "confirmed", "rejected"] // Need to get this from API
   
   const [currentOrder, setCurrentOrder] = useState(null);
+
   const [filteredOrders, setFilteredOrders] = useState(orders);
 
   const { pageManager, currentItems: currentOrders } = PageManager(filteredOrders, pageItems);
@@ -17,18 +18,27 @@ const OrderList = ({ orders, pageItems, type }) => {
   const { handleFetch: changeStatus, data: updatedOrder, error: orderUpdateError } = useAPIFetch({
     url: getUrl({ 
       endpoint: "ORDER_DETAILS", 
-      pathParams: { orderId: currentOrder?.orderId }
+      pathParams: { order_id: currentOrder?.orderId }
     }), 
     method: "PUT",
     body: { status: currentOrder?.orderStatus }
   })
 
-  const handleStatusChange = (id, status) => {
-    setCurrentOrder({orderId: id, orderStatus: status})
+  const handleOrderChange = (values) => {
+    const fieldName = Object.keys(values)[1];
+    console.log(fieldName, values[fieldName])
+    setCurrentOrder(prevOrder => ({
+      ...prevOrder,
+      ["orderId"]: values.order,
+      [fieldName]: values[fieldName]
+    }));
   };
 
   useEffect(() => {
-    if(currentOrder) changeStatus()
+    if(currentOrder) {
+      console.log(currentOrder);
+      //changeStatus()
+    }
   }, [currentOrder])
 
   useEffect(() => {
@@ -63,11 +73,18 @@ const OrderList = ({ orders, pageItems, type }) => {
               <td>{order.id}</td>
               <td>{order.user_id}</td>
               <td>{order.book_id}</td>
-              <td>{order.quantity}</td>
               <td>
                 { /* pop up with update / confirm / reject => if update then modal with changes */ }
                 { type === "dashboard" ? (
-                  <Form.Control as="select" defaultValue={order.status} onChange={(e) => handleStatusChange(order.id, e.target.value)}>
+                  <Form.Control type="number" min={0} defaultValue={order.quantity} onChange={(e) => handleOrderChange({"order": order.id, "quantity": e.target.value})} />
+                ) : (
+                  <p>{order.quantity}</p>
+                )}
+              </td>
+              <td>
+                { /* pop up with update / confirm / reject => if update then modal with changes */ }
+                { type === "dashboard" ? (
+                  <Form.Control as="select" defaultValue={order.status} onChange={(e) => handleOrderChange({"order": order.id, "status": e.target.value})}>
                       {statuses.map((status) => (
                           <option value={status}>{status}</option>
                       ))}

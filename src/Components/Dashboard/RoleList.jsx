@@ -20,10 +20,10 @@ const RoleList = ({ users, pageItems }) => {
   const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
     url: getUrl({ 
       endpoint: "USER_DETAILS", 
-      pathParams: { userId: currentUser?.userId }
+      pathParams: { user_id: currentUser?.userId }
     }), 
     method: "PUT",
-    body: { role: currentUser?.userRole }
+    body: { user_id: currentUser?.userId, role: currentUser?.userRole }
   })
 
   const handleRoleChange = (id, role) => {

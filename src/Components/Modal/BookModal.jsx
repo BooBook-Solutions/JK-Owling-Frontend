@@ -44,10 +44,10 @@ function BookModal({ book }) {
     const { handleFetch: updateBook, data: updatedBook, error: bookUpdateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOK_DETAILS", 
-          pathParams: { bookId: book?.id }
+          pathParams: { book_id: book?.id }
         }), 
         method: "PUT",
-        body: { title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
+        body: { book_id: book?.id, title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
     })
 
     const { handleFetch: createBook, data: createdBook, error: bookCreateError } = useAPIFetch({
@@ -59,7 +59,8 @@ function BookModal({ book }) {
     })
 
     const handleSaveChanges = () => {
-        if (![title, author, description, cover, price, quantity].every(Boolean)) {
+        const parsedQuantity = !isNaN(quantity) ? parseInt(quantity, 10) : 0;
+        if (![title, author, description, cover, price].every(Boolean) || parsedQuantity < 0) {
             alert("Please fill in all fields");
         } else { 
             if(book) updateBook();
@@ -126,7 +127,7 @@ function BookModal({ book }) {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Quantity</Form.Label>
-                        <Form.Control type="number" placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                        <Form.Control type="number" min={0} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
                     </Form.Group>
                     </>
                 }

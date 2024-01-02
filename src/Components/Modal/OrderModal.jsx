@@ -30,7 +30,7 @@ function OrderModal() {
           endpoint: "ORDERS"
         }), 
         method: "POST",
-        body: { userId: user, bookId: book, quantity: quantity }
+        body: { user_id: user, book_id: book, quantity: quantity }
     })
 
     const handleSaveChanges = () => {
