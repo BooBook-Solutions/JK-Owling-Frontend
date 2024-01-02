@@ -3,13 +3,16 @@ import { Table, Form } from 'react-bootstrap';
 import PageManager from './PageManager';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import SearchBar from './SearchBar';
 
 const OrderList = ({ orders, pageItems, type }) => {
 
-  const statuses = ["Pending", "Confirmed", "Rejected"] // Need to get this from API
+  const statuses = ["pending", "confirmed", "rejected"] // Need to get this from API
   
   const [currentOrder, setCurrentOrder] = useState(null);
-  const { pageManager, currentItems: currentOrders} = PageManager(orders, pageItems)
+  const [filteredOrders, setFilteredOrders] = useState(orders);
+
+  const { pageManager, currentItems: currentOrders } = PageManager(filteredOrders, pageItems);
 
   const { handleFetch: changeStatus, data: updatedOrder, error: orderUpdateError } = useAPIFetch({
     url: getUrl({ 
@@ -43,12 +46,14 @@ const OrderList = ({ orders, pageItems, type }) => {
   return (
     <>
     <div>
+      <SearchBar items={orders} setItems={setFilteredOrders} placeholder={"Search orders..."} />
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>Order ID</th>
             <th>User ID</th>
             <th>Book ID</th>
+            <th>Quantity</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -58,6 +63,7 @@ const OrderList = ({ orders, pageItems, type }) => {
               <td>{order.id}</td>
               <td>{order.user_id}</td>
               <td>{order.book_id}</td>
+              <td>{order.quantity}</td>
               <td>
                 { /* pop up with update / confirm / reject => if update then modal with changes */ }
                 { type === "dashboard" ? (

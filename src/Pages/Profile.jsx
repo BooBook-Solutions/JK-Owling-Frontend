@@ -23,7 +23,7 @@ const Profile = () => {
             <p><b>Token Expiration Date: </b>{String(new Date(authState.expires * 1000))}</p>
 
             { /* On PUT, send me the new token with the updated values */ }
-            <UserModal />
+            { /* <UserModal /> */ }
         </Container>
         </>
     );

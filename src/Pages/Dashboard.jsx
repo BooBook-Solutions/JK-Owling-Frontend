@@ -7,6 +7,8 @@ import BookList from "../Components/Common/BookList";
 import RoleList from "../Components/Dashboard/RoleList";
 import OrderList from "../Components/Common/OrderList";
 import LoadingSpinner from "../Components/Common/Spinner";
+import BookModal from "../Components/Modal/BookModal";
+import OrderModal from "../Components/Modal/OrderModal";
 
 import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
@@ -61,35 +63,41 @@ function Dashboard(){
               userError ? (
                 <p>{userError?.message}</p>
               ) : (
-                users.length > 0 ? <RoleList users={users} pageItems={8}/> : "Empty" 
+                users.length > 0 ? <RoleList users={users} pageItems={6}/> : "Empty" 
               )
           )}
         </Container>
       
         { /* Modal to add new book */ }
         <Container id="books" className="mt-5 mb-5">
-          <h1>Books</h1>
+          <div className="add-button-container">
+            <h1>Books</h1>
+            <BookModal />
+          </div>
           { !books && !bookError ? (
               <LoadingSpinner />
           ) : (
                bookError ? (
                 <p>{bookError?.message}</p>
               ) : (
-                books.length > 0 ?<BookList books={books} pageItems={6} pagination={"left"} type={"dashboard"} /> : "Empty" 
+                books.length > 0 ? <BookList books={books} pageItems={6} pagination={"left"} type={"dashboard"} /> : "Empty" 
               )
           )}
         </Container>
             
         { /* Modal to add place new order */ }
         <Container id="orders" className="mt-5 mb-5">
-          <h1>Orders</h1>
+          <div className="add-button-container">
+            <h1>Orders</h1>
+            <OrderModal />
+          </div>
           { !orders && !orderError ? (
               <LoadingSpinner />
           ) : (
                orderError ? (
                 <p>{orderError?.message}</p>
               ) : (
-                orders.length > 0 ? <OrderList orders={orders} pageItems={8} type={"dashboard"} /> : "Empty" 
+                orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"dashboard"} /> : "Empty" 
               )
           )}
         </Container>

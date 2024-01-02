@@ -33,7 +33,7 @@ function UserCard({ user }) {
       <img alt="Profile" width="50px" style={{padding: "5px", borderRadius: "10px"}} src={user.picture} />
       <Card.Body>
         <Card.Title>{user.name + " " + user.surname}</Card.Title>
-        <Card.Subtitle><b>ID: </b>{user.id}</Card.Subtitle>
+        <Card.Text><b>User ID: </b>{user.id}</Card.Text>
         <Card.Text>{user.email}</Card.Text>
       </Card.Body>
       <Card.Footer><b>Role: </b>{user.role}</Card.Footer>

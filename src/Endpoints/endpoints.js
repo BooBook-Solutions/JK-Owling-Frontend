@@ -20,8 +20,8 @@ const getUrl = ({ endpoint, pathParams={}, queryParams={} }) => {
   
     var endpointPath = endpointFunction(pathParams);
 
-    if(endpointPath.includes("undefined")){
-        console.error(`Path parameters for "${endpoint}" aren't defined, but still requested!`);
+    if(pathParams && endpointPath.includes("undefined")){
+        console.error(`Path parameters for "${endpoint}" contain undefined values.`);
         return null;
     }
 

@@ -18,7 +18,7 @@ const useAuthFetch = (url) => {
                 "Content-Type": "application/json",
             },
             credentials: 'include',
-            body: JSON.stringify({token: response.credential})
+            body: JSON.stringify({google_token: response.credential})
         })
         .then((response) => { 
             setLoading(false);
