@@ -5,9 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
-function OrderModal({ order, type }) {
-
-    const statuses = ["pending", "confirmed", "rejected"] // Need to get this from API
+function OrderModal({ order, type, statuses }) {
 
     const [show, setShow] = useState(false);
 
@@ -18,7 +16,10 @@ function OrderModal({ order, type }) {
 
     const handleUserChange = (e) => setUser(e.target.value);
     const handleBookChange = (e) => setBook(e.target.value);
-    const handleQuantityChange = (e) => setQuantity(e.target.value);
+    const handleQuantityChange = (e) => {
+        e.target.value = parseInt(e.target.value, 10);
+        setQuantity(e.target.value);
+    }
     const handleStatusChange = (e) => setStatus(e.target.value);
 
     const handleClose = () => setShow(false);
@@ -36,7 +37,7 @@ function OrderModal({ order, type }) {
           pathParams: { order_id: order?.id }
         }), 
         method: "PUT",
-        body: { order_id: order?.id, quantity: quantity, status: status }
+        body: { order_id: order?.id, quantity: parseInt(quantity, 10), status: status }
     })
 
     const { handleFetch: createOrder, data: createdOrder, error: orderCreateError } = useAPIFetch({
@@ -44,14 +45,14 @@ function OrderModal({ order, type }) {
           endpoint: "ORDERS"
         }), 
         method: "POST",
-        body: { user_id: user, book_id: book, quantity: quantity }
+        body: { user_id: user, book_id: book, quantity: parseInt(quantity, 10) }
     })
 
     const handleSaveChanges = () => {
 
-        const parsedQuantity = !isNaN(quantity) ? parseInt(quantity, 10) : 0;
+        const parsedQuantity = parseInt(quantity, 10);
         
-        if (![user, book, quantity, status].every(Boolean) || parsedQuantity <= 0) {
+        if (![user, book, quantity, parsedQuantity, status].every(Boolean) || parsedQuantity <= 0) {
             alert("Something is missing or wrong!");
         } else { 
             if(order) {
@@ -101,13 +102,13 @@ function OrderModal({ order, type }) {
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Quantity</Form.Label>
-                    <Form.Control type="number" min={0} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                    <Form.Control type="number" min={0} step={1} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
                 </Form.Group>
                 { order && 
                     <Form.Group className="mb-3">
                         <Form.Label>Status</Form.Label>
                         <Form.Control as="select" defaultValue={status} onChange={handleStatusChange}>
-                            { statuses.map((status) => (<option value={status}>{status}</option>)) }
+                            { statuses?.map((status) => (<option value={status.name}>{status.name_translated}</option>)) }
                         </Form.Control>
                     </Form.Group>
                 }

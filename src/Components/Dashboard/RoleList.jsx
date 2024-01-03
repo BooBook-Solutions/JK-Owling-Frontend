@@ -9,13 +9,19 @@ import SearchBar from '../Common/SearchBar';
 
 const RoleList = ({ users, pageItems }) => {
 
-  const roles = ["admin", "user"] // Need to get this from API
-
   const [currentUser, setCurrentUser] = useState(null);
 
   const [filteredUsers, setFilteredUsers] = useState(users);
 
   const { pageManager, currentItems: currentUsers } = PageManager(filteredUsers, pageItems);
+
+  const { handleFetch: getRoles, data: roles, error: rolesError } = useAPIFetch({
+    url: getUrl({ endpoint: "ROLES" })
+  })
+
+  useEffect(() => {
+      getRoles();
+  }, [])
 
   const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
     url: getUrl({ 
@@ -63,11 +69,11 @@ const RoleList = ({ users, pageItems }) => {
               <td>{user.id}</td>
               <td>{user.email}</td>
               <td>
-                <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
-                    {roles.map((role) => (
-                        <option value={role}>{role}</option>
-                    ))}
-                </Form.Control>
+                { roles && !rolesError &&
+                  <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
+                      { roles?.map((role) => (<option value={role.name}>{role.name_translated}</option>)) }
+                  </Form.Control>
+                }
               </td>
             </tr>
           ))}

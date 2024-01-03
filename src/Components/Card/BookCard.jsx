@@ -66,7 +66,7 @@ function BookCard({ book, type }) {
 
   useEffect(() => {
     if(orderedBook){
-      alert(orderedBook.book_id + " correctly ordered! Check your orders.");
+      alert(orderedBook.book.id + " correctly ordered! Check your orders.");
       window.location.reload();
     }
 
@@ -90,7 +90,7 @@ function BookCard({ book, type }) {
       <Card.Footer>
         { type === "dashboard" ? (
             <>
-            <BookModal book={book} />
+            <BookModal book={book}/>
             <Button variant="danger" style={{ marginLeft: '10px' }}  onClick={handleDelete}>Delete</Button>
             </>
           ) : (

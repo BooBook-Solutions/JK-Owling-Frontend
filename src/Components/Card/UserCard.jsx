@@ -36,11 +36,12 @@ function UserCard({ user }) {
     <Card>
       <img alt="Profile" width="50px" style={{padding: "5px", borderRadius: "10px"}} src={user.picture} />
       <Card.Body>
+        {console.log(user)}
         <Card.Title>{user.name + " " + user.surname}</Card.Title>
         <Card.Text><b>User ID: </b>{user.id}</Card.Text>
         <Card.Text>{user.email}</Card.Text>
       </Card.Body>
-      <Card.Footer><b>Role: </b>{user.role}</Card.Footer>
+      <Card.Footer><b>Role: </b>{user.role.name_translated}</Card.Footer>
       <Card.Footer>
         { /* <UserModal userInfo={user}/> */ } { /* Does it make any sense? Data is retrieved from Google... */ }
         <Button variant="danger" onClick={handleDelete}>Delete</Button>

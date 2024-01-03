@@ -28,7 +28,10 @@ function BookModal({ book }) {
     const handleDescriptionChange = (e) => setDescription(e.target.value);
     const handleCoverChange = (e) => setCover(e.target.value);
     const handlePriceChange = (e) => setPrice(e.target.value);
-    const handleQuantityChange = (e) => setQuantity(e.target.value);
+    const handleQuantityChange = (e) => {
+        e.target.value = parseInt(e.target.value, 10);
+        setQuantity(e.target.value);
+    }
 
     const handleClose = () => setShow(false);
     const handleShow = () => {
@@ -47,7 +50,7 @@ function BookModal({ book }) {
           pathParams: { book_id: book?.id }
         }), 
         method: "PUT",
-        body: { book_id: book?.id, title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
+        body: { book_id: book?.id, title: title, author: author, description: description, cover: cover, price: parseFloat(price), quantity: parseInt(quantity, 10) }
     })
 
     const { handleFetch: createBook, data: createdBook, error: bookCreateError } = useAPIFetch({
@@ -55,13 +58,13 @@ function BookModal({ book }) {
           endpoint: "BOOKS"
         }), 
         method: "POST",
-        body: { title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
+        body: { title: title, author: author, description: description, cover: cover, price: parseFloat(price), quantity: parseInt(quantity, 10) }
     })
 
     const handleSaveChanges = () => {
-        const parsedQuantity = !isNaN(quantity) ? parseInt(quantity, 10) : 0;
-        const parsedPrice = !isNaN(price) ? parseFloat(price) : 0;
-        if (![title, author, description, cover, price].every(Boolean) || parsedQuantity < 0 || parsedPrice <= 0) {
+        const parsedQuantity = parseInt(quantity, 10);
+        const parsedPrice = parseFloat(price);
+        if (![title, author, description, cover, parsedQuantity, parsedPrice].every(Boolean) || parsedQuantity < 0 || parsedPrice <= 0) {
             alert("Something is missing or wrong!");
         } else { 
             if(book) updateBook();
@@ -126,11 +129,11 @@ function BookModal({ book }) {
                     <>
                     <Form.Group className="mb-3">
                         <Form.Label>Price</Form.Label>
-                        <Form.Control type="number" placeholder="price" defaultValue={price} onChange={handlePriceChange} />
+                        <Form.Control type="number" min={0} step={0.01} placeholder="price" defaultValue={price} onChange={handlePriceChange} />
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Quantity</Form.Label>
-                        <Form.Control type="number" min={0} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                        <Form.Control type="number" min={0} step={1} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
                     </Form.Group>
                     </>
                 }
@@ -143,7 +146,7 @@ function BookModal({ book }) {
                 </div>
                 <div>
                     <Button variant="secondary" style={{marginRight: "5px"}} onClick={handleClose}>Close</Button>
-                    <Button variant="primary" onClick={handleSaveChanges}>{ book ? "Save Changes" : "Create Book" }</Button>
+                    { currentPage === totalPages && <Button variant="primary" onClick={handleSaveChanges}>{ book ? "Save Changes" : "Create Book" }</Button> }
                 </div>
             </Modal.Footer>
         </Modal>
