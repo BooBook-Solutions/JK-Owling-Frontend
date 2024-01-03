@@ -8,7 +8,7 @@ import getUrl from '../../Endpoints/endpoints';
 
 function OrderCard({ order, type, statuses }) {
 
-    const statusClass = order.status === "pending" ? "text-warning" : order.status === "confirmed" ? "text-success" : "text-danger";
+    const statusClass = order.status.name === "pending" ? "text-warning" : order.status.name === "confirmed" ? "text-success" : "text-danger";
 
     const { handleFetch: deleteOrder, data: deletedOrder, error } = useAPIFetch({
         url: getUrl({ 
