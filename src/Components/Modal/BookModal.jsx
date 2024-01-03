@@ -60,8 +60,9 @@ function BookModal({ book }) {
 
     const handleSaveChanges = () => {
         const parsedQuantity = !isNaN(quantity) ? parseInt(quantity, 10) : 0;
-        if (![title, author, description, cover, price].every(Boolean) || parsedQuantity < 0) {
-            alert("Please fill in all fields");
+        const parsedPrice = !isNaN(price) ? parseFloat(price) : 0;
+        if (![title, author, description, cover, price].every(Boolean) || parsedQuantity < 0 || parsedPrice <= 0) {
+            alert("Something is missing or wrong!");
         } else { 
             if(book) updateBook();
             else createBook(); 
@@ -82,11 +83,13 @@ function BookModal({ book }) {
 
     return (
         <>
-        { book && <Button variant="primary" onClick={handleShow}>Update</Button> }
-        { !book && 
+        { book ? 
+            <Button variant="primary" onClick={handleShow}>Update</Button> : 
+            (
             <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
                 <box-icon type="solid" color="white" name="plus-square"></box-icon>
             </Button>
+            )
         }
 
         <Modal show={show} onHide={handleClose}>
@@ -140,8 +143,7 @@ function BookModal({ book }) {
                 </div>
                 <div>
                     <Button variant="secondary" style={{marginRight: "5px"}} onClick={handleClose}>Close</Button>
-                    { book && <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button> }
-                    { !book && <Button variant="primary" onClick={handleSaveChanges}>Create Book</Button> }
+                    <Button variant="primary" onClick={handleSaveChanges}>{ book ? "Save Changes" : "Create Book" }</Button>
                 </div>
             </Modal.Footer>
         </Modal>
