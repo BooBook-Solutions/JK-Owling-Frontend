@@ -11,10 +11,14 @@ function UserCard({ user }) {
   const { handleFetch: deleteUser, data: deletedUser, error } = useAPIFetch({
     url: getUrl({ 
       endpoint: "USER_DETAILS", 
-      pathParams: { userId: user.id }
+      pathParams: { user_id: user.id }
     }), 
     method: "DELETE"
   })
+
+  const handleDelete = () => {
+    if(window.confirm("Are you sure you want to delete this user?")) deleteUser();
+  }
 
   useEffect(() => {
     if(deletedUser){
@@ -39,7 +43,7 @@ function UserCard({ user }) {
       <Card.Footer><b>Role: </b>{user.role}</Card.Footer>
       <Card.Footer>
         { /* <UserModal userInfo={user}/> */ } { /* Does it make any sense? Data is retrieved from Google... */ }
-        <Button variant="danger" onClick={deleteUser}>Delete</Button>
+        <Button variant="danger" onClick={handleDelete}>Delete</Button>
       </Card.Footer>
     </Card>
   );

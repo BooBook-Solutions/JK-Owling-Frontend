@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import BookModal from '../Modal/BookModal';
@@ -11,19 +11,24 @@ import { useAuthContext } from '../Context/AuthContext';
 function BookCard({ book, type }) {
 
   const { authState } = useAuthContext();
+  const [currentQuantity, setCurrentQuantity] = useState(null);
 
   const { handleFetch: deleteBook, data: deletedBook, error: bookDeleteError } = useAPIFetch({
     url: getUrl({ 
       endpoint: "BOOK_DETAILS", 
-      pathParams: { bookId: book.id }
+      pathParams: { book_id: book.id }
     }), 
     method: "DELETE"
   })
 
+  const handleDelete = () => {  
+    if(window.confirm("Are you sure you want to delete this book?")) deleteBook();
+  }
+
   const { handleFetch: orderBook, data: orderedBook, error: bookOrderError } = useAPIFetch({
     url: getUrl({ endpoint: "ORDERS" }), 
     method: "POST", 
-    body: book
+    body: { user_id: authState.user.id, book_id: book.id, quantity: currentQuantity }
   })
 
   const handleOrder = () => {
@@ -36,8 +41,7 @@ function BookCard({ book, type }) {
       const parsedQuantity = parseInt(quantity, 10);
 
       if(!isNaN(parsedQuantity) && parsedQuantity > 0 && parsedQuantity <= book.quantity) {
-        book.quantity = parsedQuantity;
-        orderBook();
+        setCurrentQuantity(parsedQuantity);
       }
       else alert("Invalid quantity!");
     }
@@ -57,8 +61,12 @@ function BookCard({ book, type }) {
   }, [deletedBook, bookDeleteError])
 
   useEffect(() => {
+    if(currentQuantity) orderBook();
+  }, [currentQuantity])
+
+  useEffect(() => {
     if(orderedBook){
-      alert(orderedBook.id + " correctly ordered!");
+      alert(orderedBook.book_id + " correctly ordered! Check your orders.");
       window.location.reload();
     }
 
@@ -83,7 +91,7 @@ function BookCard({ book, type }) {
         { type === "dashboard" ? (
             <>
             <BookModal book={book} />
-            <Button variant="danger" style={{ marginLeft: '10px' }}  onClick={deleteBook}>Delete</Button>
+            <Button variant="danger" style={{ marginLeft: '10px' }}  onClick={handleDelete}>Delete</Button>
             </>
           ) : (
             type === "catalogue" ? (

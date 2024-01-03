@@ -44,10 +44,10 @@ function BookModal({ book }) {
     const { handleFetch: updateBook, data: updatedBook, error: bookUpdateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOK_DETAILS", 
-          pathParams: { bookId: book?.id }
+          pathParams: { book_id: book?.id }
         }), 
         method: "PUT",
-        body: { title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
+        body: { book_id: book?.id, title: title, author: author, description: description, cover: cover, price: price, quantity: quantity }
     })
 
     const { handleFetch: createBook, data: createdBook, error: bookCreateError } = useAPIFetch({
@@ -59,8 +59,10 @@ function BookModal({ book }) {
     })
 
     const handleSaveChanges = () => {
-        if (![title, author, description, cover, price, quantity].every(Boolean)) {
-            alert("Please fill in all fields");
+        const parsedQuantity = !isNaN(quantity) ? parseInt(quantity, 10) : 0;
+        const parsedPrice = !isNaN(price) ? parseFloat(price) : 0;
+        if (![title, author, description, cover, price].every(Boolean) || parsedQuantity < 0 || parsedPrice <= 0) {
+            alert("Something is missing or wrong!");
         } else { 
             if(book) updateBook();
             else createBook(); 
@@ -81,11 +83,13 @@ function BookModal({ book }) {
 
     return (
         <>
-        { book && <Button variant="primary" onClick={handleShow}>Update</Button> }
-        { !book && 
+        { book ? 
+            <Button variant="primary" onClick={handleShow}>Update</Button> : 
+            (
             <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
                 <box-icon type="solid" color="white" name="plus-square"></box-icon>
             </Button>
+            )
         }
 
         <Modal show={show} onHide={handleClose}>
@@ -126,7 +130,7 @@ function BookModal({ book }) {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Quantity</Form.Label>
-                        <Form.Control type="number" placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                        <Form.Control type="number" min={0} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
                     </Form.Group>
                     </>
                 }
@@ -139,8 +143,7 @@ function BookModal({ book }) {
                 </div>
                 <div>
                     <Button variant="secondary" style={{marginRight: "5px"}} onClick={handleClose}>Close</Button>
-                    { book && <Button variant="primary" onClick={handleSaveChanges}>Save Changes</Button> }
-                    { !book && <Button variant="primary" onClick={handleSaveChanges}>Create Book</Button> }
+                    <Button variant="primary" onClick={handleSaveChanges}>{ book ? "Save Changes" : "Create Book" }</Button>
                 </div>
             </Modal.Footer>
         </Modal>

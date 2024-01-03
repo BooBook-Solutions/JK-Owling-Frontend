@@ -18,7 +18,7 @@ const Book = () => {
     const { handleFetch: getBookDetails, data: book, error } = useAPIFetch({
         url: getUrl({ 
             endpoint: "BOOK_DETAILS", 
-            pathParams: { bookId: id }
+            pathParams: { book_id: id }
         })
     });
 

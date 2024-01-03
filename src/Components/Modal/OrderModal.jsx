@@ -5,81 +5,117 @@ import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
-function OrderModal() {
+function OrderModal({ order, type }) {
+
+    const statuses = ["pending", "confirmed", "rejected"] // Need to get this from API
 
     const [show, setShow] = useState(false);
 
-    const [user, setUser] = useState("");
-    const [book, setBook] = useState("");
-    const [quantity, setQuantity] = useState("");
+    const [user, setUser] = useState(order ? order.user : "");
+    const [book, setBook] = useState(order ? order.book : "");
+    const [status, setStatus] = useState(order ? order.status : "pending");
+    const [quantity, setQuantity] = useState(order ? order.quantity : "");
 
     const handleUserChange = (e) => setUser(e.target.value);
     const handleBookChange = (e) => setBook(e.target.value);
     const handleQuantityChange = (e) => setQuantity(e.target.value);
+    const handleStatusChange = (e) => setStatus(e.target.value);
 
     const handleClose = () => setShow(false);
     const handleShow = () => {
-        setUser("");
-        setBook("");
-        setQuantity("");
+        setUser(order ? order.user : "");
+        setBook(order ? order.book : "");
+        setQuantity(order ? order.quantity : "");
+        setStatus(order ? order.status : "pending");
         setShow(true);
     }
+
+    const { handleFetch: updateOrder, data: updatedOrder, error: orderUpdateError } = useAPIFetch({
+        url: getUrl({ 
+          endpoint: "ORDER_DETAILS", 
+          pathParams: { order_id: order?.id }
+        }), 
+        method: "PUT",
+        body: { order_id: order?.id, quantity: quantity, status: status }
+    })
 
     const { handleFetch: createOrder, data: createdOrder, error: orderCreateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDERS"
         }), 
         method: "POST",
-        body: { userId: user, bookId: book, quantity: quantity }
+        body: { user_id: user, book_id: book, quantity: quantity }
     })
 
     const handleSaveChanges = () => {
-        if (![user, book, quantity].every(Boolean)) {
-            alert("Please fill in all fields");
-        } else { createOrder() }
+
+        const parsedQuantity = !isNaN(quantity) ? parseInt(quantity, 10) : 0;
+        
+        if (![user, book, quantity, status].every(Boolean) || parsedQuantity <= 0) {
+            alert("Something is missing or wrong!");
+        } else { 
+            if(order) {
+                if(parsedQuantity !== order.quantity || status !== order.status) updateOrder();
+                else alert("No changes to save!");
+            }
+            else createOrder(); 
+        }
     };
 
     useEffect(() => {
-        if(createdOrder){
-            alert(JSON.stringify(createdOrder));
+        if(updatedOrder || createdOrder){
+            alert(JSON.stringify(updatedOrder || createdOrder));
             window.location.reload();
         }
     
-        if(orderCreateError){
+        if(orderUpdateError || orderCreateError){
             alert("Something went wrong! Check console logs...");
-            console.error(orderCreateError);
+            console.error(orderUpdateError || orderCreateError);
         }
-    }, [createdOrder, orderCreateError]);
+    }, [updatedOrder, createdOrder, orderUpdateError, orderCreateError]);
 
     return (
         <>
-        <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
-            <box-icon type="solid" color="white" name="plus-square"></box-icon>
-        </Button>
+        { order ? 
+            <Button variant="primary" onClick={handleShow}>Update</Button> :
+            (
+            <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
+                <box-icon type="solid" color="white" name="plus-square"></box-icon>
+            </Button>
+            )
+        }
 
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Create New Order</Modal.Title>
+                <Modal.Title>{ order ? "Change Order Info" : "Create New Order" }</Modal.Title>
             </Modal.Header>
             <Modal.Body>
             <Form>
                 <Form.Group className="mb-3">
-                    <Form.Label>User</Form.Label>
-                    <Form.Control type="text" placeholder="user id" defaultValue={user} onChange={handleUserChange} autoFocus/>
+                    <Form.Label>User ID</Form.Label>
+                    <Form.Control type="text" placeholder="user id" defaultValue={user ? user.id + " - " + user.email : ""} disabled={type === "dashboard"} onChange={handleUserChange} autoFocus/>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Book</Form.Label>
-                    <Form.Control type="text" placeholder="book id" defaultValue={book} onChange={handleBookChange} />
+                    <Form.Label>Book ID</Form.Label>
+                    <Form.Control type="text" placeholder="book id" defaultValue={book ? book.id + " - " + book.title : ""} disabled={type === "dashboard"} onChange={handleBookChange} />
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Quantity</Form.Label>
-                    <Form.Control type="number" placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                    <Form.Control type="number" min={0} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
                 </Form.Group>
+                { order && 
+                    <Form.Group className="mb-3">
+                        <Form.Label>Status</Form.Label>
+                        <Form.Control as="select" defaultValue={status} onChange={handleStatusChange}>
+                            { statuses.map((status) => (<option value={status}>{status}</option>)) }
+                        </Form.Control>
+                    </Form.Group>
+                }
             </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>Close</Button>
-                <Button variant="primary" onClick={handleSaveChanges}>Create Order</Button>
+                <Button variant="secondary" style={{marginRight: "5px"}} onClick={handleClose}>Close</Button>
+                <Button variant="primary" onClick={handleSaveChanges}>{ order ? "Save Changes" : "Create Order"}</Button>
             </Modal.Footer>
         </Modal>
         </>

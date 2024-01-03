@@ -5,9 +5,9 @@ const endpoints = {
     USERS: () => "/users",
     BOOKS: () => "/books",
     ORDERS: () => "/orders",
-    USER_DETAILS: (params) => `/users/${params?.userId}`,
-    BOOK_DETAILS: (params) => `/books/${params?.bookId}`,
-    ORDER_DETAILS: (params) => `/orders/${params?.orderId}`,
+    USER_DETAILS: (params) => `/users/${params?.user_id}`,
+    BOOK_DETAILS: (params) => `/books/${params?.book_id}`,
+    ORDER_DETAILS: (params) => `/orders/${params?.order_id}`,
 };
 
 const getUrl = ({ endpoint, pathParams={}, queryParams={} }) => {
