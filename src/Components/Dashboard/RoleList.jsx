@@ -42,7 +42,7 @@ const RoleList = ({ users, pageItems }) => {
 
   useEffect(() => {
     if(updatedUser){
-      alert(updatedUser.role);
+      alert("Role changed successfully!");
       window.location.reload();
     }
 
@@ -70,7 +70,7 @@ const RoleList = ({ users, pageItems }) => {
               <td>{user.email}</td>
               <td>
                 { roles && !rolesError &&
-                  <Form.Control as="select" defaultValue={user.role} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
+                  <Form.Control as="select" defaultValue={user.role.name} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
                       { roles?.map((role) => (<option value={role.name}>{role.name_translated}</option>)) }
                   </Form.Control>
                 }
