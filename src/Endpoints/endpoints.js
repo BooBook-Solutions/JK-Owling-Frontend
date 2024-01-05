@@ -22,11 +22,6 @@ const getUrl = ({ endpoint, pathParams={}, queryParams={} }) => {
   
     var endpointPath = endpointFunction(pathParams);
 
-    if(pathParams && endpointPath.includes("undefined")){
-        console.error(`Path parameters for "${endpoint}" contain undefined values.`);
-        return null;
-    }
-
     if(queryParams){
         const queryString = Object.keys(queryParams)
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(queryParams[key]))

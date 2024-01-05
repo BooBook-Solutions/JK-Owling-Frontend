@@ -74,7 +74,8 @@ function BookModal({ book }) {
 
     useEffect(() => {
         if(updatedBook || createdBook){
-            alert(JSON.stringify(updatedBook || createdBook));
+            if(updatedBook) alert("Book updated successfully!");
+            if(createdBook) alert("Book created successfully!");
             window.location.reload();
         }
     

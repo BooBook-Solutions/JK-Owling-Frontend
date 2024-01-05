@@ -36,7 +36,6 @@ function UserCard({ user }) {
     <Card>
       <img alt="Profile" width="50px" style={{padding: "5px", borderRadius: "10px"}} src={user.picture} />
       <Card.Body>
-        {console.log(user)}
         <Card.Title>{user.name + " " + user.surname}</Card.Title>
         <Card.Text><b>User ID: </b>{user.id}</Card.Text>
         <Card.Text>{user.email}</Card.Text>
