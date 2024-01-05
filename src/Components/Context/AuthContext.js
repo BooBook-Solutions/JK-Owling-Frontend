@@ -8,20 +8,29 @@ export const AuthContextProvider = ({ children }) => {
 
   const [userState, setUserState] = useState(() => {
     const storedUserState = localStorage.getItem('userState');
-    return storedUserState ? JSON.parse(storedUserState) : { isAuth: false, user: {} };
+    return storedUserState ? JSON.parse(storedUserState) : { isAuth: false, token: "" };
   });
 
-  const login = (authUser) => {
+  const login = (authToken) => {
     setUserState({
         isAuth: true,
-        user: authUser
+        token: authToken
     });
+  }
+
+  const getDecodedState = () => {
+    if(userState.isAuth){
+      const decodedToken = jwtDecode(userState.token);
+      const isUserAdmin = decodedToken.user.role.toLowerCase() === "admin";
+      return { isAuth: userState.isAuth, user: decodedToken.user, isAdmin: isUserAdmin, expires: decodedToken.expires }
+    } else 
+      return { isAuth: false, user: {}, expires: null };
   }
 
   const logout = () => {
     setUserState({
       isAuth: false,
-      user: {}
+      token: ""
     });
   };
 
@@ -34,13 +43,14 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     if(userState.isAuth){
-      const exp = jwtDecode(userState.user.token).expires * 1000;
+      const exp = jwtDecode(userState?.token).expires * 1000;
       if (exp < Date.now()) { logout(); }
     }
-  });
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ authState: userState, login, logout }}>
+    //authState: userState, login, logout
+    <AuthContext.Provider value={{ authState: getDecodedState(), token: userState.token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
