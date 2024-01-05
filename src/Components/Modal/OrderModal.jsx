@@ -65,7 +65,8 @@ function OrderModal({ order, type, statuses }) {
 
     useEffect(() => {
         if(updatedOrder || createdOrder){
-            alert(JSON.stringify(updatedOrder || createdOrder));
+            if(updatedOrder) alert("Order updated successfully!");
+            if(createdOrder) alert("Order created successfully!");
             window.location.reload();
         }
     

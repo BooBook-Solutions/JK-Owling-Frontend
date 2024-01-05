@@ -9,11 +9,9 @@ const SearchBar = ({ items, setItems, placeholder }) => {
     }
 
     const handleSearch = (query) => {
-      console.log(query);
       const filteredItems = items.filter((item) =>
           Object.values(item).some((value) => !isLink(value) && String(value).toLowerCase().includes(query.toLowerCase()))
       );
-      console.log(filteredItems);
       if(query) setItems(filteredItems);
       else setItems(items);
     };
