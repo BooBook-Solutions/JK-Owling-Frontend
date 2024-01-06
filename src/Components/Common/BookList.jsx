@@ -31,7 +31,7 @@ const BookList = ({ books, pageItems, type }) => {
         <div>
             <div className="add-button-container">
                 <SearchBar items={books} setItems={setFilteredBooks} placeholder={"Search books..."} />
-                <BookModal onCreate={handleBookCreation} />
+                { type === "dashboard" && <BookModal onCreate={handleBookCreation} /> }
             </div>
             <div className="row">
                 {currentBooks.map((book) => (

@@ -70,12 +70,12 @@ function BookModal({ book, onCreate, onUpdate }) {
             if(book) {
                 updateBook().then((updatedBook) => {
                     if(updatedBook) {
-                        console.log("Book [" + updatedBook.title + "] correctly updated!")
-                        alert("Book [" + updatedBook.title + "] correctly updated!");
+                        console.log("Book [" + updatedBook.id + "] correctly updated!")
+                        alert("Book [" + updatedBook.id + "] correctly updated!");
                         onUpdate(updatedBook);
                         handleClose();
                     } else {
-                        alert("Error while updating book [" + book.title + "]. Check console for more details.");
+                        alert("Error while updating book [" + book.id + "]. Check console for more details.");
                     }
                 });
             }
