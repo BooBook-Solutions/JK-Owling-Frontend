@@ -13,6 +13,10 @@ function BookCard({ book, type, onUpdate, onDelete }) {
   const { authState } = useAuthContext();
   const [currentQuantity, setCurrentQuantity] = useState(null);
 
+  const cardStyle = {
+    width: type !== "dashboard" ? 'auto' : '18rem',
+  };
+
   const { handleFetch: deleteBook } = useAPIFetch({
     url: getUrl({ 
       endpoint: "BOOK_DETAILS", 
@@ -60,10 +64,10 @@ function BookCard({ book, type, onUpdate, onDelete }) {
 
   useEffect(() => {
     if(currentQuantity) {
-      orderBook().then((orderedBook) => {
-        if(orderedBook) {
-          console.log("Book [" + orderedBook.title + "] correctly ordered!")
-          alert("Book [" + orderedBook.title + "] correctly ordered! Check your orders for more details.");
+      orderBook().then((order) => {
+        if(order) {
+          console.log("Book [" + order.book.title + "] correctly ordered!")
+          alert("Book [" + order.book.title + "] correctly ordered! Check your orders for more details.");
           book.quantity -= currentQuantity;
         } else {
           alert("Error while ordering book [" + book.title + "]. Check console for more details.");
@@ -73,12 +77,12 @@ function BookCard({ book, type, onUpdate, onDelete }) {
   }, [currentQuantity]) // eslint-disable-line
 
   return (
-    <Card style={{ width: '18rem' }}>
-      <Card.Text style={{marginLeft: "10px", marginTop: "5px"}}><b>Book ID: </b>{book.id}</Card.Text>
+    <Card style={cardStyle}>
       { type !== "catalogue" && <img alt="Cover" width="100px" style={{padding: "5px"}} src={book.cover}/> }
       <Card.Body>
         <Card.Title>{book.title}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">{book.author}</Card.Subtitle>
+        <Card.Text><b>Book ID: </b>{book.id}</Card.Text>
         { type !== "catalogue" && type !== "dashboard" && <Card.Text>{book.description}</Card.Text> }
       </Card.Body>
       <Card.Footer><b>Price: </b>{book.price}€</Card.Footer>
