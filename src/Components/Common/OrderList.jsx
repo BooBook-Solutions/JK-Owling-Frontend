@@ -5,6 +5,8 @@ import SearchBar from './SearchBar';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
+import OrderModal from '../Modal/OrderModal';
+
 const OrderList = ({ orders, pageItems, type }) => {
 
     const [filteredOrders, setFilteredOrders] = useState(orders);
@@ -15,18 +17,37 @@ const OrderList = ({ orders, pageItems, type }) => {
         url: getUrl({ endpoint: "STATUS" })
     })
 
+    // On load, get statuses
     useEffect(() => {
         getStatuses();
-    }, [])
+    }, []) // eslint-disable-line
+
+    const handleOrderDeletion = (deletedOrderId) => {
+        // Remove the deleted order from the state
+        setFilteredOrders(prevOrders => prevOrders.filter(order => order.id !== deletedOrderId));
+    }
+
+    const handleOrderCreation = (createdOrder) => {
+        // Add the created order to the state
+        setFilteredOrders(prevOrders => [...prevOrders, createdOrder]);
+    }
+
+    const handleOrderUpdate = (updatedOrder) => {
+        // Update the order in the state
+        setFilteredOrders(prevOrders => prevOrders.map(order => order.id === updatedOrder.id ? updatedOrder : order));
+    }
 
     return (
         <div>
-            <SearchBar items={orders} setItems={setFilteredOrders} placeholder={"Search orders..."} />
+            <div className="add-button-container">
+                <SearchBar items={orders} setItems={setFilteredOrders} placeholder={"Search orders..."} />
+                <OrderModal onCreate={handleOrderCreation} />
+            </div>
             <div className="row">
                 { !statusesError &&
                     currentOrders.map((order) => (
                     <div key={order.id} className="col-md-4 mb-3">
-                        <OrderCard order={order} type={type} statuses={statuses}/>
+                        <OrderCard order={order} type={type} statuses={statuses} onUpdate={handleOrderUpdate} onDelete={handleOrderDeletion}/>
                     </div>
                 ))}
             </div>

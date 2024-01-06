@@ -9,5 +9,6 @@
 .add-button-container {
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 }
   

@@ -7,17 +7,15 @@ import BookList from "../Components/Common/BookList";
 import RoleList from "../Components/Dashboard/RoleList";
 import OrderList from "../Components/Common/OrderList";
 import LoadingSpinner from "../Components/Common/Spinner";
-import BookModal from "../Components/Modal/BookModal";
-import OrderModal from "../Components/Modal/OrderModal";
 
 import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
 
-import "../Styles/dashboard.scss"
+import "../Styles/dashboard.scss";
 
 function Dashboard(){
 
-  const { handleFetch: getUsers, data: users, error: userError } = useAPIFetch({
+  const { handleFetch: getUsers, data: users, setData: setUsers, error: userError } = useAPIFetch({
     url: getUrl({ endpoint: "USERS" })
   })
   const { handleFetch: getBooks, data: books, error: bookError } = useAPIFetch({
@@ -27,11 +25,13 @@ function Dashboard(){
     url: getUrl({ endpoint: "ORDERS" })
   })
 
+  // On load, get users, books and orders
+  // eslint-disable-next-line
   useEffect(() => {
     getUsers();
     getBooks();
     getOrders();
-  }, [])
+  }, []) // eslint-disable-line
 
   return (
     <>
@@ -41,7 +41,6 @@ function Dashboard(){
 
       <Container className="main-container container-fluid">
 
-        { /* Modal to add new user ?!? */ }
         <Container id="users" className="mt-3 mb-5">
           <h1>Users</h1>
           { !users && !userError ? (
@@ -50,7 +49,7 @@ function Dashboard(){
               userError ? (
                 <p>{userError?.message}</p>
               ) : (
-                users.length > 0 ? <UserList users={users} pageItems={6}/> : "Empty" 
+                users.length > 0 ? <UserList users={users} setUsers={setUsers} pageItems={6}/> : "Empty" 
               )
           )}
         </Container>
@@ -68,29 +67,21 @@ function Dashboard(){
           )}
         </Container>
       
-        { /* Modal to add new book */ }
         <Container id="books" className="mt-5 mb-5">
-          <div className="add-button-container">
-            <h1>Books</h1>
-            <BookModal />
-          </div>
+          <h1>Books</h1>
           { !books && !bookError ? (
               <LoadingSpinner />
           ) : (
                bookError ? (
                 <p>{bookError?.message}</p>
               ) : (
-                books.length > 0 ? <BookList books={books} pageItems={6} pagination={"left"} type={"dashboard"} /> : "Empty" 
+                books.length > 0 ? <BookList books={books} pageItems={6} type={"dashboard"} /> : "Empty" 
               )
           )}
         </Container>
             
-        { /* Modal to add place new order */ }
         <Container id="orders" className="mt-5 mb-5">
-          <div className="add-button-container">
-            <h1>Orders</h1>
-            <OrderModal />
-          </div>
+          <h1>Orders</h1>
           { !orders && !orderError ? (
               <LoadingSpinner />
           ) : (

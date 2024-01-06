@@ -24,7 +24,7 @@ const Book = () => {
 
     useEffect(() => { 
         getBookDetails();
-    }, [])
+    }, []) // eslint-disable-line
 
     return (
         <>

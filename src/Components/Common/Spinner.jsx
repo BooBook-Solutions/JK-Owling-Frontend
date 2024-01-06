@@ -1,7 +1,5 @@
 import Spinner from 'react-bootstrap/Spinner';
 
-import "../../Styles/style.css";
-
 function LoadingSpinner() {
   return (
     <div className="centered-div">

@@ -7,11 +7,9 @@ import LoadingSpinner from "../Components/Common/Spinner";
 import useAuthFetch from "../Hooks/useAuthFetch";
 import getUrl from "../Endpoints/endpoints";
 
-import "../Styles/style.css";
-
 const Authentication = () => {
 
-    const { handleGoogle, loading, error } = useAuthFetch(getUrl({ endpoint: "AUTHENTICATION"}))
+    const { handleGoogle, loading, error } = useAuthFetch(getUrl({ endpoint: "AUTHENTICATION" }))
 
     // To avoid Google button render issues
     useEffect(() => {

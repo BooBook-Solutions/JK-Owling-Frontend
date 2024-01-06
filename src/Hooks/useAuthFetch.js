@@ -33,6 +33,7 @@ const useAuthFetch = (url) => {
             throw new Error(data?.message || data);
         })
         .catch((error) => {
+            console.error("Fetch error:", error?.message);
             setError(error?.message);
         });
     }

@@ -25,7 +25,7 @@ const Order = () => {
 
     useEffect(() => {
         getUserOrders();
-    }, [])
+    }, []) // eslint-disable-line
 
     return (
         <>

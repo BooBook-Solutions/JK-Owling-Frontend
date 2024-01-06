@@ -19,11 +19,7 @@ const RoleList = ({ users, pageItems }) => {
     url: getUrl({ endpoint: "ROLES" })
   })
 
-  useEffect(() => {
-      getRoles();
-  }, [])
-
-  const { handleFetch: changeRole, data: updatedUser, error: userUpdateError } = useAPIFetch({
+  const { handleFetch: changeRole } = useAPIFetch({
     url: getUrl({ 
       endpoint: "USER_DETAILS", 
       pathParams: { user_id: currentUser?.userId }
@@ -32,29 +28,40 @@ const RoleList = ({ users, pageItems }) => {
     body: { user_id: currentUser?.userId, role: currentUser?.userRole }
   })
 
-  const handleRoleChange = (id, role) => {
-    setCurrentUser({userId: id, userRole: role})
+  // On load, get roles
+  useEffect(() => {
+    getRoles();
+  }, []); // eslint-disable-line
+
+  // When users change, update filtered users
+  useEffect(() => {
+    setFilteredUsers(users);
+  }, [users]);
+
+  // On role change, set current user
+  const handleRoleChange = (id, email, role) => {
+    setCurrentUser({ userId: id, userEmail: email, userRole: role });
   };
 
+  // On current user change, update the role
   useEffect(() => {
-    if(currentUser) changeRole()
-  }, [currentUser])
-
-  useEffect(() => {
-    if(updatedUser){
-      alert("Role changed successfully!");
-      window.location.reload();
+    if(currentUser) {
+      changeRole().then((updatedUser) => {
+        if(updatedUser) {
+          console.log("Role of user [" + updatedUser.email + "] changed successfully!");
+          alert("Role of user [" + updatedUser.email + "] changed successfully!");
+        } else {
+          alert("Error while changing role of user [" + currentUser.userEmail + "]. Check console for more details.");
+        }
+      });
     }
-
-    if(userUpdateError){
-      alert("Something went wrong! Check console logs...");
-      console.error(userUpdateError);
-    }
-  }, [updatedUser, userUpdateError])
+  }, [currentUser]); // eslint-disable-line
 
   return (
     <div>
-      <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
+      <div className="add-button-container">
+        <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
+      </div>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -69,11 +76,17 @@ const RoleList = ({ users, pageItems }) => {
               <td>{user.id}</td>
               <td>{user.email}</td>
               <td>
-                { roles && !rolesError &&
-                  <Form.Control as="select" defaultValue={user.role.name} onChange={(e) => handleRoleChange(user.id, e.target.value)}>
-                      { roles?.map((role) => (<option value={role.name}>{role.name_translated}</option>)) }
-                  </Form.Control>
-                }
+                { !roles && !rolesError ? (
+                    <span>Loading roles...</span>
+                  ) : (
+                    rolesError ? (
+                      <p>{rolesError?.message}</p>
+                    ) : (
+                      <Form.Control as="select" defaultValue={user.role.name} onChange={(e) => handleRoleChange(user.id, user.email, e.target.value)}>
+                        { roles?.map((role) => (<option key={role.name} value={role.name}>{role.name_translated}</option>)) }
+                      </Form.Control>
+                    )
+                )}
               </td>
             </tr>
           ))}
