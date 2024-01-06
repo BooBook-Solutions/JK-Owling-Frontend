@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
-function BookModal({ book }) {
+function BookModal({ book, onCreate, onUpdate }) {
 
     const [show, setShow] = useState(false);
 
@@ -44,7 +44,7 @@ function BookModal({ book }) {
         setShow(true);
     }
 
-    const { handleFetch: updateBook, data: updatedBook, error: bookUpdateError } = useAPIFetch({
+    const { handleFetch: updateBook } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOK_DETAILS", 
           pathParams: { book_id: book?.id }
@@ -53,7 +53,7 @@ function BookModal({ book }) {
         body: { book_id: book?.id, title: title, author: author, description: description, cover: cover, price: parseFloat(price), quantity: parseInt(quantity, 10) }
     })
 
-    const { handleFetch: createBook, data: createdBook, error: bookCreateError } = useAPIFetch({
+    const { handleFetch: createBook } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOKS"
         }), 
@@ -65,25 +65,34 @@ function BookModal({ book }) {
         const parsedQuantity = parseInt(quantity, 10);
         const parsedPrice = parseFloat(price);
         if (![title, author, description, cover, parsedQuantity, parsedPrice].every(Boolean) || parsedQuantity < 0 || parsedPrice <= 0) {
-            alert("Something is missing or wrong!");
+            alert("Check that all fields are filled and that price and quantity are positive numbers.");
         } else { 
-            if(book) updateBook();
-            else createBook(); 
+            if(book) {
+                updateBook().then((updatedBook) => {
+                    if(updatedBook) {
+                        console.log("Book [" + updatedBook.title + "] correctly updated!")
+                        alert("Book [" + updatedBook.title + "] correctly updated!");
+                        onUpdate(updatedBook);
+                        handleClose();
+                    } else {
+                        alert("Error while updating book [" + book.title + "]. Check console for more details.");
+                    }
+                });
+            }
+            else {
+                createBook().then((createdBook) => {
+                    if(createdBook) {
+                        console.log("Book [" + createdBook.title + "] correctly created!")
+                        alert("Book [" + createdBook.title + "] correctly created!");
+                        onCreate(createdBook);
+                        handleClose();
+                    } else {
+                        alert("Error while creating book. Check console for more details.");
+                    }
+                });
+            } 
         }
     };
-
-    useEffect(() => {
-        if(updatedBook || createdBook){
-            if(updatedBook) alert("Book updated successfully!");
-            if(createdBook) alert("Book created successfully!");
-            window.location.reload();
-        }
-    
-        if(bookUpdateError || bookCreateError){
-            alert("Something went wrong! Check console logs...");
-            console.error(bookUpdateError || bookCreateError);
-        }
-    }, [updatedBook, createdBook, bookUpdateError, bookCreateError]);
 
     return (
         <>

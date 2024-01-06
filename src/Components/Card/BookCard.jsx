@@ -8,12 +8,12 @@ import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 import { useAuthContext } from '../Context/AuthContext';
 
-function BookCard({ book, type }) {
+function BookCard({ book, type, onUpdate, onDelete }) {
 
   const { authState } = useAuthContext();
   const [currentQuantity, setCurrentQuantity] = useState(null);
 
-  const { handleFetch: deleteBook, data: deletedBook, error: bookDeleteError } = useAPIFetch({
+  const { handleFetch: deleteBook } = useAPIFetch({
     url: getUrl({ 
       endpoint: "BOOK_DETAILS", 
       pathParams: { book_id: book.id }
@@ -21,15 +21,25 @@ function BookCard({ book, type }) {
     method: "DELETE"
   })
 
-  const handleDelete = () => {  
-    if(window.confirm("Are you sure you want to delete this book?")) deleteBook();
-  }
-
-  const { handleFetch: orderBook, data: orderedBook, error: bookOrderError } = useAPIFetch({
+  const { handleFetch: orderBook } = useAPIFetch({
     url: getUrl({ endpoint: "ORDERS" }), 
     method: "POST", 
     body: { user_id: authState.user.id, book_id: book.id, quantity: currentQuantity }
   })
+
+  const handleDelete = () => {
+    if(window.confirm("Are you sure you want to delete this book?")) {
+      deleteBook().then((deletedBook) => {
+        if(deletedBook) {
+          console.log("Book [" + deletedBook.title + "] correctly deleted!")
+          alert("Book [" + deletedBook.title + "] correctly deleted!");
+          onDelete(deletedBook.id);
+        } else {
+          alert("Error while deleting book [" + book.title + "]. Check console for more details.");
+        }
+      });
+    }
+  }
 
   const handleOrder = () => {
     if(book.quantity === 0) alert("Book out of stock!");
@@ -49,32 +59,18 @@ function BookCard({ book, type }) {
   }
 
   useEffect(() => {
-    if(deletedBook){
-      alert(deletedBook.id + " correctly deleted!");
-      window.location.reload();
+    if(currentQuantity) {
+      orderBook().then((orderedBook) => {
+        if(orderedBook) {
+          console.log("Book [" + orderedBook.title + "] correctly ordered!")
+          alert("Book [" + orderedBook.title + "] correctly ordered! Check your orders for more details.");
+          book.quantity -= currentQuantity;
+        } else {
+          alert("Error while ordering book [" + book.title + "]. Check console for more details.");
+        }
+      });
     }
-
-    if(bookDeleteError){
-      alert("Something went wrong! Check console logs...");
-      console.error(bookDeleteError);
-    }
-  }, [deletedBook, bookDeleteError])
-
-  useEffect(() => {
-    if(currentQuantity) orderBook();
-  }, [currentQuantity])
-
-  useEffect(() => {
-    if(orderedBook){
-      alert(orderedBook.book.id + " correctly ordered! Check your orders.");
-      window.location.reload();
-    }
-
-    if(bookOrderError){
-      alert("Something went wrong! Check console logs...");
-      console.error(bookOrderError);
-    }
-  }, [orderedBook, bookOrderError])
+  }, [currentQuantity]) // eslint-disable-line
 
   return (
     <Card style={{ width: '18rem' }}>
@@ -90,7 +86,7 @@ function BookCard({ book, type }) {
       <Card.Footer>
         { type === "dashboard" ? (
             <>
-            <BookModal book={book}/>
+            <BookModal book={book} onUpdate={onUpdate}/>
             <Button variant="danger" style={{ marginLeft: '10px' }}  onClick={handleDelete}>Delete</Button>
             </>
           ) : (

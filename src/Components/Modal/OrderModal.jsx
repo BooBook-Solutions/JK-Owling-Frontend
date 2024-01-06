@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
-function OrderModal({ order, type, statuses }) {
+function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
 
     const [show, setShow] = useState(false);
 
@@ -31,7 +31,7 @@ function OrderModal({ order, type, statuses }) {
         setShow(true);
     }
 
-    const { handleFetch: updateOrder, data: updatedOrder, error: orderUpdateError } = useAPIFetch({
+    const { handleFetch: updateOrder } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDER_DETAILS", 
           pathParams: { order_id: order?.id }
@@ -40,7 +40,7 @@ function OrderModal({ order, type, statuses }) {
         body: { order_id: order?.id, quantity: parseInt(quantity, 10), status: status }
     })
 
-    const { handleFetch: createOrder, data: createdOrder, error: orderCreateError } = useAPIFetch({
+    const { handleFetch: createOrder } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDERS"
         }), 
@@ -53,28 +53,36 @@ function OrderModal({ order, type, statuses }) {
         const parsedQuantity = parseInt(quantity, 10);
         
         if (![user, book, quantity, parsedQuantity, status].every(Boolean) || parsedQuantity <= 0) {
-            alert("Something is missing or wrong!");
+            alert("Please fill all the fields correctly!");
         } else { 
             if(order) {
-                if(parsedQuantity !== order.quantity || status !== order.status) updateOrder();
-                else alert("No changes to save!");
-            }
-            else createOrder(); 
+                if(parsedQuantity !== order.quantity || status !== order.status) {
+                    updateOrder().then((updatedOrder) => {
+                        if(updatedOrder) {
+                            console.log("Order [" + updatedOrder.id + "] correctly updated!")
+                            alert("Order [" + updatedOrder.id + "] correctly updated!");
+                            onUpdate(updatedOrder);
+                            handleClose();
+                        } else {
+                            alert("Error while updating order [" + order.id + "]. Check console for more details.");
+                        }
+                    });
+                }
+                else alert("No changes detected!");
+            } else {
+                createOrder().then((createdOrder) => {
+                    if(createdOrder) {
+                        console.log("Order [" + createdOrder.id + "] correctly created!")
+                        alert("Order [" + createdOrder.id + "] correctly created!");
+                        onCreate(createdOrder);
+                        handleClose();
+                    } else {
+                        alert("Error while creating order. Check console for more details.");
+                    }
+                });
+            } 
         }
     };
-
-    useEffect(() => {
-        if(updatedOrder || createdOrder){
-            if(updatedOrder) alert("Order updated successfully!");
-            if(createdOrder) alert("Order created successfully!");
-            window.location.reload();
-        }
-    
-        if(orderUpdateError || orderCreateError){
-            alert("Something went wrong! Check console logs...");
-            console.error(orderUpdateError || orderCreateError);
-        }
-    }, [updatedOrder, createdOrder, orderUpdateError, orderCreateError]);
 
     return (
         <>
@@ -109,7 +117,7 @@ function OrderModal({ order, type, statuses }) {
                     <Form.Group className="mb-3">
                         <Form.Label>Status</Form.Label>
                         <Form.Control as="select" defaultValue={status} onChange={handleStatusChange}>
-                            { statuses?.map((status) => (<option value={status.name}>{status.name_translated}</option>)) }
+                            { statuses?.map((status) => (<option key={status.name} value={status.name}>{status.name_translated}</option>)) }
                         </Form.Control>
                     </Form.Group>
                 }
