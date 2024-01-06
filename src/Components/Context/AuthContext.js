@@ -46,7 +46,7 @@ export const AuthContextProvider = ({ children }) => {
       const exp = jwtDecode(userState?.token).expires * 1000;
       if (exp < Date.now()) { logout(); }
     }
-  }, []);
+  }, []); // eslint-disable-line
 
   return (
     //authState: userState, login, logout

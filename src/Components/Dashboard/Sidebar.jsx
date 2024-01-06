@@ -16,7 +16,7 @@ const Sidebar = () => {
             <box-icon size={size} color={color} name="exit" />
         </Nav.Link>
         </Navbar>
-        <SidebarMenu variant={theme} bg={theme} expand="  ">
+        <SidebarMenu variant={theme} bg={theme} expand={false}>
         <SidebarMenu.Collapse>
             <SidebarMenu.Header>
             <SidebarMenu.Text><h1 style={{color: color}}>Dashboard</h1></SidebarMenu.Text>

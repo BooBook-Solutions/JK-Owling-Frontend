@@ -2,8 +2,6 @@ import { useLocation } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import { Button } from "react-bootstrap";
 
-import "../Styles/style.css";
-
 function ErrorPage({ eCode, eText}) {
 
   const location = useLocation();

@@ -22,18 +22,23 @@ const useAPIFetch = ({ url, method="GET", body=null }) => {
         
         try {
             const response = await fetch(url, options);
-            const jsonData = await response.json();
+            const json_data = await response.json();
+        
+            if (response.ok) {
+                setData(json_data); // used in visual renderings (GET requests)
+                return json_data; // used in POST, PUT and DELETE requests
+            }
+        
+            throw new Error(json_data?.message || json_data);
 
-            if(response.status === 200)
-                setData(jsonData)
-            else
-                setError({ "status": response.status, "message": jsonData?.message });
-        } catch(error) {
-            console.error("Fetch error:", error.message);
+        } catch (error) {
+            console.error("Fetch error:", error?.message);
+            setError(error?.message);
+            return null;
         }
     }
 
-    return { handleFetch, data, error }
+    return { handleFetch, data, setData, error }
 }
 
 export default useAPIFetch;

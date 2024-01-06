@@ -18,7 +18,7 @@ function Catalogue(){
 
     useEffect(() => {
         getBooks();
-    }, [])
+    }, []) // eslint-disable-line
 
     return (
         <>

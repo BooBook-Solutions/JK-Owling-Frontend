@@ -1,14 +1,12 @@
-import { useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import UserModal from '../Modal/UserModal';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
-function UserCard({ user }) {
+function UserCard({ user, onDelete }) {
 
-  const { handleFetch: deleteUser, data: deletedUser, error } = useAPIFetch({
+  const { handleFetch: deleteUser } = useAPIFetch({
     url: getUrl({ 
       endpoint: "USER_DETAILS", 
       pathParams: { user_id: user.id }
@@ -17,20 +15,18 @@ function UserCard({ user }) {
   })
 
   const handleDelete = () => {
-    if(window.confirm("Are you sure you want to delete this user?")) deleteUser();
+    if(window.confirm("Are you sure you want to delete this user?")) {
+      deleteUser().then((deletedUser) => {
+        if(deletedUser) {
+          console.log("User [" + deletedUser.email + "] correctly deleted!")
+          alert("User [" + deletedUser.email + "] correctly deleted!");
+          onDelete(deletedUser.id);
+        } else {
+          alert("Error while deleting user [" + user.email + "]. Check console for more details.");
+        }
+      });
+    }
   }
-
-  useEffect(() => {
-    if(deletedUser){
-      alert(deletedUser.id + " correctly deleted!");
-      window.location.reload();
-    }
-
-    if(error){
-      alert("Something went wrong! Check console logs...");
-      console.error(error);
-    }
-  }, [deletedUser, error])
 
   return (
     <Card>
@@ -42,7 +38,6 @@ function UserCard({ user }) {
       </Card.Body>
       <Card.Footer><b>Role: </b>{user.role.name_translated}</Card.Footer>
       <Card.Footer>
-        { /* <UserModal userInfo={user}/> */ } { /* Does it make any sense? Data is retrieved from Google... */ }
         <Button variant="danger" onClick={handleDelete}>Delete</Button>
       </Card.Footer>
     </Card>

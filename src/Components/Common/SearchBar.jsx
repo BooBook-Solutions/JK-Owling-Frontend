@@ -4,7 +4,7 @@ const SearchBar = ({ items, setItems, placeholder }) => {
 
     // Function to check if a string is a link
     function isLink(value) {
-      const linkRegex = /^(http|https):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$/;
+      const linkRegex = /^(http|https):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$/; // eslint-disable-line
       return linkRegex.test(value);
     }
 
@@ -18,7 +18,7 @@ const SearchBar = ({ items, setItems, placeholder }) => {
 
   return (
     <div>
-      <input className="mb-3" type="text" placeholder={placeholder} onChange={(e) => handleSearch(e.target.value)}/>
+      <input type="text" placeholder={placeholder} onChange={(e) => handleSearch(e.target.value)}/>
     </div>
   );
 };
