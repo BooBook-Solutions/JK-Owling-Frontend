@@ -3,8 +3,11 @@ import Button from 'react-bootstrap/Button';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import { useAuthContext } from '../Context/AuthContext';
 
 function UserCard({ user, type, onDelete }) {
+
+    const { authState, logout } = useAuthContext();
 
     const cardStyle = {
         width: type !== "dashboard" ? '18rem' : 'auto',
@@ -25,7 +28,12 @@ function UserCard({ user, type, onDelete }) {
                 if(deletedUser) {
                     console.log("User [" + deletedUser.email + "] correctly deleted!")
                     alert("User [" + deletedUser.email + "] correctly deleted!");
-                    onDelete(deletedUser.id);
+                    if(type === "dashboard") onDelete(deletedUser.id);
+
+                    if(authState.user.id === deletedUser.id) {
+                        logout();
+                        window.location.href = "/authentication"
+                    }
                 } else {
                     const errorMessage = deleteError ? deleteError : "check console for more details.";
                     alert("Error while deleting user [" + user.email + "]: " + errorMessage);
@@ -43,11 +51,9 @@ function UserCard({ user, type, onDelete }) {
                 <Card.Text>{user.email}</Card.Text>
             </Card.Body>
             <Card.Footer><b>Role: </b>{user.role.name_translated}</Card.Footer>
-            { type === "dashboard" &&  
-                <Card.Footer>
-                    <Button variant="danger" onClick={handleDelete}>Delete</Button>
-                </Card.Footer> 
-            }
+            <Card.Footer>
+                <Button variant="danger" onClick={handleDelete}>Delete</Button>
+            </Card.Footer> 
         </Card>
     );
 }

@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { Table, Form } from 'react-bootstrap';
 
 import PageManager from '../Common/PageManager';
+import SearchBar from '../Common/SearchBar';
+import { useAuthContext } from '../Context/AuthContext';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import useCustomEffect from '../../Hooks/useCustomEffect';
 import getUrl from '../../Endpoints/endpoints';
-import SearchBar from '../Common/SearchBar';
 
 const RoleList = ({ users, setUsers, pageItems }) => {
 
 	const [currentUser, setCurrentUser] = useState(null);
 	const [filteredUsers, setFilteredUsers] = useState(users);
 
+	const { authState, logout } = useAuthContext();
 	const { pageManager, currentItems: currentUsers } = PageManager(filteredUsers, pageItems);
 
 	const { handleFetch: getRoles, data: roles, error: rolesError } = useAPIFetch({
@@ -35,6 +37,11 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 					console.log("Role of user [" + updatedUser.email + "] changed successfully!");
 					alert("Role of user [" + updatedUser.email + "] changed successfully!");
 					setUsers(prevUsers => prevUsers.map(user => user.id === updatedUser.id ? updatedUser : user));
+
+					if(authState.user.id === updatedUser.id && updatedUser.role.name !== "admin") {
+                        logout();
+                        window.location.href = "/authentication"
+                    }
 				} else {
 					const errorMessage = updateError ? updateError : "check console for more details.";
 					alert("Error while changing role of user [" + currentUser.email + "]: " + errorMessage);
