@@ -30,22 +30,22 @@ export const AuthContextProvider = ({ children }) => {
 
 	const logout = () => {
 		setUserState({
-		isAuth: false,
-		token: ""
+			isAuth: false,
+			token: ""
 		});
 	};
 
 	const handleStorage = () => {
 		if(userState.isAuth)
-		localStorage.setItem("userState", JSON.stringify(userState));
+			localStorage.setItem("userState", JSON.stringify(userState));
 		else
-		localStorage.removeItem("userState");
+			localStorage.removeItem("userState");
 	}
 
 	const handleExpiration = () => {
 		if(userState.isAuth){
-		const exp = jwtDecode(userState?.token).expires * 1000;
-		if (exp < Date.now()) { logout(); }
+			const exp = jwtDecode(userState?.token).expires * 1000;
+			if (exp < Date.now()) { logout(); }
 		}
 	}
 
@@ -54,7 +54,7 @@ export const AuthContextProvider = ({ children }) => {
 
 	return (
 		<AuthContext.Provider value={{ authState: getDecodedState(), token: userState.token, login, logout }}>
-		{children}
+			{children}
 		</AuthContext.Provider>
 	);
 };

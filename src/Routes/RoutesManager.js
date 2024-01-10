@@ -1,9 +1,9 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import PrivateRoute from "./PrivateRoute";
 import AdminRoute from "./AdminRoute";
-import { useAuthContext } from "../Components/Context/AuthContext";
+import AuthRoute from "./AuthRoute";
 
 import Home from "../Pages/Home"; 
 import Authentication from "../Pages/Authentication";
@@ -16,19 +16,12 @@ import Book from "../Pages/Book";
 
 const RoutesManager = () => {
 
-    const { authState } = useAuthContext();
-
     return (
         <>  
         <Routes>
             <Route path="/" element={<Home />} />
 
-            { !authState.isAuth ? (
-                <Route path="/authentication" element={<Authentication />} /> 
-            ) : (
-                <Route path="/authentication" element={<Navigate to="/" />} /> 
-            )
-            }
+            <Route path="/authentication" element={<AuthRoute> <Authentication /> </AuthRoute> }/> 
 
             <Route path="/catalogue" element={<Catalogue />} />
 

@@ -74,7 +74,7 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                 alert("Invalid quantity!");
             }
         } else {
-            window.location.href = "/authentication";
+            window.location.href = "/authentication?redirect=" + encodeURIComponent(window.location.pathname);
         }
     }
 

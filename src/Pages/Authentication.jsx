@@ -21,8 +21,6 @@ const Authentication = () => {
             { loading ? (<LoadingSpinner />) : (
                 <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
                     <GoogleLogin
-                        text="continue_with"
-                        shape="pill"
                         onSuccess={handleGoogle}
                         onError={handleGoogle}
                     />

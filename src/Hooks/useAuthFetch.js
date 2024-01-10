@@ -19,8 +19,6 @@ const useAuthFetch = (url) => {
             body: JSON.stringify({google_token: response.credential})
         })
         .then((response) => { 
-            if(!response.ok) throw new Error('Network response was not ok');
-
             setLoading(false);
             return response.json(); 
         })

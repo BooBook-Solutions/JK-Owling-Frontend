@@ -12,7 +12,7 @@ function Navigation() {
 
     const handleLogout = () => {
         logout();
-        window.location.href="/authentication";
+        window.location.href = "/authentication";
     };
 
     return (
