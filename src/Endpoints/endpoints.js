@@ -7,6 +7,7 @@ const endpoints = {
     BOOKS: () => "/books",
     ORDERS: () => "/orders",
     STATUS: () => "/orders/status",
+    USER_EMAIL: () => "/users/email",
     USER_DETAILS: (params) => `/users/${params?.user_id}`,
     BOOK_DETAILS: (params) => `/books/${params?.book_id}`,
     ORDER_DETAILS: (params) => `/orders/${params?.order_id}`,

@@ -30,7 +30,8 @@ const BookList = ({ books, pageItems, type }) => {
     return (
         <div>
             <div className="add-button-container">
-                <SearchBar items={books} setItems={setFilteredBooks} placeholder={"Search books..."} />
+                { books.length > 0 && <SearchBar items={books} setItems={setFilteredBooks} placeholder={"Search books..."} />}
+                { books.length === 0 && <p style={{ paddingTop: "15px" }}>There are no books to show.</p> }
                 { type === "dashboard" && <BookModal onCreate={handleBookCreation} /> }
             </div>
             <div className="row">
@@ -40,7 +41,7 @@ const BookList = ({ books, pageItems, type }) => {
                 </div>
                 ))}
             </div>
-            { pageManager }
+            { books.length > 0 && pageManager }
         </div>
     );
 };

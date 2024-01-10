@@ -9,7 +9,7 @@ function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
 
     const statusClass = order.status.name === "pending" ? "text-warning" : order.status.name === "confirmed" ? "text-success" : "text-danger";
 
-    const { handleFetch: deleteOrder } = useAPIFetch({
+    const { handleFetch: deleteOrder, error: deleteError } = useAPIFetch({
         url: getUrl({ 
             endpoint: "ORDER_DETAILS", 
             pathParams: { order_id: order.id }
@@ -26,7 +26,8 @@ function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
                     alert("Order [" + deletedOrder.id + "] correctly deleted!");
                     onDelete(deletedOrder.id);
                 } else {
-                    alert("Error while deleting order [" + order.id + "]. Check console for more details.");
+                    const errorMessage = deleteError ? deleteError : "check console for more details.";
+                    alert("Error while deleting order [" + order.id + "]: " + errorMessage);
                 }
             });
         }
@@ -43,7 +44,7 @@ function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
             <Card.Footer><b>Status: </b><span className={statusClass}>{order.status.name_translated}</span></Card.Footer>
             { type === "dashboard" &&
                 <Card.Footer>
-                    <OrderModal order={order} type={type} statuses={statuses} onUpdate={onUpdate}/>
+                    <OrderModal order={order} type={"update"} statuses={statuses} onUpdate={onUpdate}/>
                     <Button variant="danger" style={{ marginLeft: '10px' }} onClick={handleDelete}>Delete</Button>
                 </Card.Footer>
             }

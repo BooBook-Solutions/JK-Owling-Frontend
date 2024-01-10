@@ -10,7 +10,7 @@ function UserCard({ user, type, onDelete }) {
         width: type !== "dashboard" ? '18rem' : 'auto',
     };
 
-    const { handleFetch: deleteUser } = useAPIFetch({
+    const { handleFetch: deleteUser, error: deleteError } = useAPIFetch({
         url: getUrl({ 
             endpoint: "USER_DETAILS", 
             pathParams: { user_id: user.id }
@@ -27,7 +27,8 @@ function UserCard({ user, type, onDelete }) {
                     alert("User [" + deletedUser.email + "] correctly deleted!");
                     onDelete(deletedUser.id);
                 } else {
-                    alert("Error while deleting user [" + user.email + "]. Check console for more details.");
+                    const errorMessage = deleteError ? deleteError : "check console for more details.";
+                    alert("Error while deleting user [" + user.email + "]: " + errorMessage);
                 }
             });
         }

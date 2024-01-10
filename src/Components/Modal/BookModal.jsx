@@ -33,7 +33,7 @@ function BookModal({ book, onCreate, onUpdate }) {
         setShow(true);
     }
 
-    const { handleFetch: updateBook } = useAPIFetch({
+    const { handleFetch: updateBook, error: updateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOK_DETAILS", 
           pathParams: { book_id: book?.id }
@@ -42,7 +42,7 @@ function BookModal({ book, onCreate, onUpdate }) {
         body: { book_id: book?.id }
     })
 
-    const { handleFetch: createBook } = useAPIFetch({
+    const { handleFetch: createBook, error: createError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOKS"
         }), 
@@ -67,7 +67,8 @@ function BookModal({ book, onCreate, onUpdate }) {
                     onUpdate(updatedBook);
                     handleClose();
                 } else {
-                    alert("Error while updating book [" + book.id + "]. Check console for more details.");
+                    const errorMessage = updateError ? updateError : "check console for more details.";
+                    alert("Error while updating book [" + book.id + "]: " + errorMessage);
                 }
             });
 
@@ -80,7 +81,8 @@ function BookModal({ book, onCreate, onUpdate }) {
                     onCreate(createdBook);
                     handleClose();
                 } else {
-                    alert("Error while creating book. Check console for more details.");
+                    const errorMessage = createError ? createError : "check console for more details.";
+                    alert("Error while creating book: " + errorMessage);
                 }
             });
         }

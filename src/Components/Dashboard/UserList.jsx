@@ -19,19 +19,25 @@ const UserList = ({ users, setUsers, pageItems }) => {
     useCustomEffect({functions: [() => setFilteredUsers(users)], dependencies: [users]}); //when users change, update filtered users
 
     return (
-        <div>
-            <div className="add-button-container">
-                <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
+        <>
+        { users.length > 0 ? (
+            <div>
+                <div className="add-button-container">
+                    <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
+                </div>
+                <div className="row">
+                    { currentUsers.map((user) => (
+                        <div key={user.id} className="col-md-4 mb-3">
+                            <UserCard user={user} type={"dashboard"} onDelete={handleUserDeletion}/>
+                        </div>
+                    ))}
+                </div>
+                { pageManager }
             </div>
-            <div className="row">
-                { currentUsers.map((user) => (
-                    <div key={user.id} className="col-md-4 mb-3">
-                        <UserCard user={user} type={"dashboard"} onDelete={handleUserDeletion}/>
-                    </div>
-                ))}
-            </div>
-            { pageManager }
-        </div>
+        ) : (
+            <p>There are no users to show.</p>
+        )}
+        </>
     );
 };
 

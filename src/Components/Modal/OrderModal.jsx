@@ -23,7 +23,7 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
         setShow(true);
     }
 
-    const { handleFetch: updateOrder } = useAPIFetch({
+    const { handleFetch: updateOrder, error: updateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDER_DETAILS", 
           pathParams: { order_id: order?.id }
@@ -32,7 +32,7 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
         body: { order_id: order?.id }
     })
 
-    const { handleFetch: createOrder } = useAPIFetch({
+    const { handleFetch: createOrder, error: createError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDERS"
         }), 
@@ -44,12 +44,13 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
         const { user, book, quantity, status } = currentOrder;
 
         if(order) {
-            if(![quantity, status].every(Boolean) || quantity <= 0) {
-                alert("Please fill the quantity and the status fields correctly! Quantity must be a positive number.");
+            // Can add quantity controls
+            if(![status].every(Boolean)) {
+                alert("Status must be selected!")
                 return;
             }
 
-            updateOrder({ quantity, status })
+            updateOrder({ status })
             .then((updatedOrder) => {
                 if(updatedOrder) {
                     console.log("Order [" + updatedOrder.id + "] correctly updated!")
@@ -57,7 +58,8 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                     onUpdate(updatedOrder);
                     handleClose();
                 } else {
-                    alert("Error while updating order [" + order.id + "]. Check console for more details.");
+                    const errorMessage = updateError ? updateError : "check console for more details.";
+                    alert("Error while updating order [" + order.id + "]: " + errorMessage);
                 }
             })
             
@@ -75,7 +77,8 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                     onCreate(createdOrder);
                     handleClose();
                 } else {
-                    alert("Error while creating order. Check console for more details.");
+                    const errorMessage = createError ? createError : "check console for more details.";
+                    alert("Error while creating order: " + errorMessage);
                 }
             });
         }
@@ -100,15 +103,15 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
             <Form>
                 <Form.Group className="mb-3">
                     <Form.Label>User ID { currentOrder?.user?.email && " - " + currentOrder?.user?.email }</Form.Label>
-                    <Form.Control type="text" placeholder="user id" defaultValue={currentOrder?.user?.id} disabled={type === "dashboard"} onChange={(e) => setCurrentOrder({ ...currentOrder, user: { ...currentOrder.user, id: e.target.value }})} autoFocus/>
+                    <Form.Control type="text" placeholder="user id" defaultValue={currentOrder?.user?.id} disabled={type === "update"} onChange={(e) => setCurrentOrder({ ...currentOrder, user: { ...currentOrder.user, id: e.target.value }})} autoFocus/>
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Book ID { currentOrder?.book?.title && " - " + currentOrder?.book?.title }</Form.Label>
-                    <Form.Control type="text" placeholder="book id" defaultValue={currentOrder?.book?.id} disabled={type === "dashboard"} onChange={(e) => setCurrentOrder({ ...currentOrder, book: { ...currentOrder.book, id: e.target.value }})} />
+                    <Form.Control type="text" placeholder="book id" defaultValue={currentOrder?.book?.id} disabled={type === "update"} onChange={(e) => setCurrentOrder({ ...currentOrder, book: { ...currentOrder.book, id: e.target.value }})} />
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Quantity</Form.Label>
-                    <Form.Control type="number" min={0} step={1} placeholder="quantity" defaultValue={currentOrder?.quantity} onChange={(e) => setCurrentOrder({ ...currentOrder, quantity: parseInt(Number(e.target?.value), 10) })} />
+                    <Form.Control type="number" min={0} step={1} placeholder="quantity" disabled={type === "update"} defaultValue={currentOrder?.quantity} onChange={(e) => setCurrentOrder({ ...currentOrder, quantity: parseInt(Number(e.target?.value), 10) })} />
                 </Form.Group>
                 { order && 
                     <Form.Group className="mb-3">

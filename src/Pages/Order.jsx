@@ -39,7 +39,7 @@ const Order = () => {
                     <Container className="p-3">
                         <Container id="orders" className="mt-5 mb-5">
                             <h1>Orders</h1>
-                            { orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"user_orders"} /> : "Empty" }
+                            { orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"user_orders"} /> : "No orders found." }
                         </Container>
                     </Container>
                 </>

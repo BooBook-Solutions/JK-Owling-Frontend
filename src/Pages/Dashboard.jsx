@@ -44,7 +44,7 @@ function Dashboard(){
 				userError ? (
 					<p>{userError?.message}</p>
 				) : (
-					users.length > 0 ? <UserList users={users} setUsers={setUsers} pageItems={6}/> : "Empty" 
+					<UserList users={users} setUsers={setUsers} pageItems={6}/>
 				)
 			)}
 			</Container>
@@ -57,7 +57,7 @@ function Dashboard(){
 				userError ? (
 					<p>{userError?.message}</p>
 				) : (
-					users.length > 0 ? <RoleList users={users} setUsers={setUsers} pageItems={6}/> : "Empty" 
+					<RoleList users={users} setUsers={setUsers} pageItems={6}/>
 				)
 			)}
 			</Container>
@@ -70,7 +70,7 @@ function Dashboard(){
 				bookError ? (
 					<p>{bookError?.message}</p>
 				) : (
-					books.length > 0 ? <BookList books={books} pageItems={6} type={"dashboard"} /> : "Empty" 
+					<BookList books={books} pageItems={6} type={"dashboard"} />
 				)
 			)}
 			</Container>
@@ -83,7 +83,7 @@ function Dashboard(){
 				orderError ? (
 					<p>{orderError?.message}</p>
 				) : (
-					orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"dashboard"} /> : "Empty" 
+					<OrderList orders={orders} pageItems={6} type={"dashboard"} />
 				)
 			)}
 			</Container>

@@ -15,9 +15,11 @@ function BookCard({ book, type, onUpdate, onDelete }) {
 
     const cardStyle = {
         width: type !== "dashboard" ? 'auto' : '18rem',
+        maxWidth: '40rem',
+        minWidth: '18rem',
     };
 
-    const { handleFetch: deleteBook } = useAPIFetch({
+    const { handleFetch: deleteBook, error: deleteError } = useAPIFetch({
         url: getUrl({ 
             endpoint: "BOOK_DETAILS", 
             pathParams: { book_id: book.id }
@@ -25,7 +27,7 @@ function BookCard({ book, type, onUpdate, onDelete }) {
         method: "DELETE"
     })
 
-    const { handleFetch: orderBook } = useAPIFetch({
+    const { handleFetch: orderBook, error: createError } = useAPIFetch({
         url: getUrl({ endpoint: "ORDERS" }), 
         method: "POST", 
         body: { user_id: authState.user.id, book_id: book.id }
@@ -40,7 +42,8 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                     alert("Book [" + deletedBook.title + "] correctly deleted!");
                     onDelete(deletedBook.id);
                 } else {
-                    alert("Error while deleting book [" + book.title + "]. Check console for more details.");
+                    const errorMessage = deleteError ? deleteError : "check console for more details.";
+                    alert("Error while deleting book [" + book.title + "]: " + errorMessage);
                 }
             });
         }
@@ -67,7 +70,8 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                         alert("Book [" + order.book.title + "] correctly ordered! Check your orders for more details.");
                         book.quantity -= parsedQuantity;
                     } else {
-                        alert("Error while ordering book [" + book.title + "]. Check console for more details.");
+                        const errorMessage = createError ? createError : "check console for more details.";
+                        alert("Error while ordering book [" + book.title + "]: " + errorMessage);
                     }
                 });
             } else { 

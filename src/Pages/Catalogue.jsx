@@ -31,7 +31,7 @@ function Catalogue(){
                     <Navigation />
                     <Container className="p-3">
                         <h1>Catalogue</h1>
-                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "Empty" }
+                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "No books found." }
                     </Container>
                 </>
             )

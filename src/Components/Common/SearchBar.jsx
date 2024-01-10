@@ -9,11 +9,22 @@ const SearchBar = ({ items, setItems, placeholder }) => {
 	}
 
 	const handleSearch = (query) => {
-		const filteredItems = items.filter((item) =>
-			Object.values(item).some((value) => !isLink(value) && String(value).toLowerCase().includes(query.toLowerCase()))
-		);
-		if(query) setItems(filteredItems);
-		else setItems(items);
+		const filterNestedItems = (item) => {
+			return Object.values(item).some((value) => {
+				if (typeof value === 'object' && value !== null) {
+					return filterNestedItems(value);
+				}
+
+				return !isLink(value) && String(value).toLowerCase().includes(query.toLowerCase());
+			});
+		};
+		
+		const filteredItems = items.filter((item) => filterNestedItems(item));
+		
+		if(query) 
+			setItems(filteredItems);
+		else 
+			setItems(items);
 	};
 
 	return (

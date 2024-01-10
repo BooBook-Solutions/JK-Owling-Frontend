@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useAuthContext } from "../Components/Context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import getUrl from "../Endpoints/endpoints";
 
 const useAuthFetch = (url) => {
 
@@ -8,15 +10,33 @@ const useAuthFetch = (url) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     
-    const handleGoogle = (response) => {
+    const handleGoogle = async (response) => {
+        
+        let role = "user";
+        let isRoleNeeded = false;
+        
+        await fetch(getUrl({ 
+            endpoint: "USER_EMAIL", 
+            queryParams: { user_email: jwtDecode(response.credential).email }
+        }))
+        .then((response) => { 
+            if(!response.ok) { // User not found, so ask for role
+                isRoleNeeded = true;
+                if(window.confirm("Do you want to be an admin?"))
+                    role = "admin";
+            }
+        })
+
+        const body = isRoleNeeded ? { google_token: response.credential, role } : { google_token: response.credential };
+
         setLoading(true);
-        fetch(url, { 
+        await fetch(url, { 
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
             credentials: 'include',
-            body: JSON.stringify({google_token: response.credential})
+            body: JSON.stringify(body)
         })
         .then((response) => { 
             setLoading(false);
