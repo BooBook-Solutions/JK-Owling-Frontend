@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import useCustomEffect from '../../Hooks/useCustomEffect';
 
 function BookModal({ book, onCreate, onUpdate }) {
 
@@ -66,9 +67,6 @@ function BookModal({ book, onCreate, onUpdate }) {
                     alert("Book [" + updatedBook.id + "] correctly updated!");
                     onUpdate(updatedBook);
                     handleClose();
-                } else {
-                    const errorMessage = updateError ? updateError : "check console for more details.";
-                    alert("Error while updating book [" + book.id + "]: " + errorMessage);
                 }
             });
 
@@ -80,13 +78,27 @@ function BookModal({ book, onCreate, onUpdate }) {
                     alert("Book [" + createdBook.title + "] correctly created!");
                     onCreate(createdBook);
                     handleClose();
-                } else {
-                    const errorMessage = createError ? createError : "check console for more details.";
-                    alert("Error while creating book: " + errorMessage);
                 }
             });
         }
     };
+
+    const handleUpdateError = () => {
+		if(updateError){
+			const errorMessage = updateError ? updateError : "check console for more details.";
+            alert("Error while updating book [" + book.id + "]: " + errorMessage);
+		}
+	}
+
+    const handleCreateError = () => {
+		if(createError){
+			const errorMessage = createError ? createError : "check console for more details.";
+            alert("Error while creating book: " + errorMessage);
+		}
+	}
+
+    useCustomEffect({functions: [handleUpdateError], dependencies: [updateError]}); // on update error, show error
+    useCustomEffect({functions: [handleCreateError], dependencies: [createError]}); // on create error, show error
 
     return (
         <>

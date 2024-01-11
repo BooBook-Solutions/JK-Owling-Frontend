@@ -4,6 +4,7 @@ import OrderModal from '../Modal/OrderModal';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import useCustomEffect from '../../Hooks/useCustomEffect';
 
 function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
 
@@ -25,13 +26,19 @@ function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
                     console.log("Order [" + deletedOrder.id + "] correctly deleted!")
                     alert("Order [" + deletedOrder.id + "] correctly deleted!");
                     onDelete(deletedOrder.id);
-                } else {
-                    const errorMessage = deleteError ? deleteError : "check console for more details.";
-                    alert("Error while deleting order [" + order.id + "]: " + errorMessage);
                 }
             });
         }
     }
+
+    const handleDeleteError = () => {
+        if(deleteError){
+            const errorMessage = deleteError ? deleteError : "check console for more details.";
+            alert("Error while deleting order [" + order.id + "]: " + errorMessage);
+        }
+    }
+
+    useCustomEffect({functions: [handleDeleteError], dependencies: [deleteError]}) // on delete error, show error
 
     return (
         <Card style={{ width: '18rem' }}>

@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import useCustomEffect from '../../Hooks/useCustomEffect';
 
 function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
 
@@ -57,9 +58,6 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                     alert("Order [" + updatedOrder.id + "] correctly updated!");
                     onUpdate(updatedOrder);
                     handleClose();
-                } else {
-                    const errorMessage = updateError ? updateError : "check console for more details.";
-                    alert("Error while updating order [" + order.id + "]: " + errorMessage);
                 }
             })
             
@@ -76,13 +74,27 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                     alert("Order [" + createdOrder.id + "] correctly created!");
                     onCreate(createdOrder);
                     handleClose();
-                } else {
-                    const errorMessage = createError ? createError : "check console for more details.";
-                    alert("Error while creating order: " + errorMessage);
                 }
             });
         }
     };
+
+    const handleUpdateError = () => {
+		if(updateError){
+			const errorMessage = updateError ? updateError : "check console for more details.";
+            alert("Error while updating order [" + order.id + "]: " + errorMessage);
+		}
+	}
+
+    const handleCreateError = () => {
+		if(createError){
+			const errorMessage = createError ? createError : "check console for more details.";
+            alert("Error while creating order: " + errorMessage);
+		}
+	}
+
+    useCustomEffect({functions: [handleUpdateError], dependencies: [updateError]}); // on update error, show error
+    useCustomEffect({functions: [handleCreateError], dependencies: [createError]}); // on create error, show error
 
     return (
         <>

@@ -8,6 +8,7 @@ import BookModal from '../Modal/BookModal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 
 import getUrl from '../../Endpoints/endpoints';
+import useCustomEffect from '../../Hooks/useCustomEffect';
 
 function BookCard({ book, type, onUpdate, onDelete }) {
 
@@ -41,13 +42,17 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                     console.log("Book [" + deletedBook.title + "] correctly deleted!")
                     alert("Book [" + deletedBook.title + "] correctly deleted!");
                     onDelete(deletedBook.id);
-                } else {
-                    const errorMessage = deleteError ? deleteError : "check console for more details.";
-                    alert("Error while deleting book [" + book.title + "]: " + errorMessage);
                 }
             });
         }
     }
+
+    const handleDeleteError = () => {
+		if(deleteError){
+			const errorMessage = deleteError ? deleteError : "check console for more details.";
+            alert("Error while deleting book [" + book.title + "]: " + errorMessage);
+		}
+	}
 
     const handleOrder = () => {
         if(book.quantity === 0) {
@@ -69,9 +74,6 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                         console.log("Book [" + order.book.title + "] correctly ordered!")
                         alert("Book [" + order.book.title + "] correctly ordered! Check your orders for more details.");
                         book.quantity -= parsedQuantity;
-                    } else {
-                        const errorMessage = createError ? createError : "check console for more details.";
-                        alert("Error while ordering book [" + book.title + "]: " + errorMessage);
                     }
                 });
             } else { 
@@ -81,6 +83,16 @@ function BookCard({ book, type, onUpdate, onDelete }) {
             window.location.href = "/authentication?redirect=" + encodeURIComponent(window.location.pathname);
         }
     }
+    
+    const handleOrderError = () => {
+		if(createError){
+			const errorMessage = createError ? createError : "check console for more details.";
+            alert("Error while ordering book [" + book.title + "]: " + errorMessage);
+		}
+	}
+
+    useCustomEffect({functions: [handleDeleteError], dependencies: [deleteError]});
+    useCustomEffect({functions: [handleOrderError], dependencies: [createError]});
 
     return (
         <Card style={cardStyle}>

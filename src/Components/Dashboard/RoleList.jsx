@@ -29,6 +29,18 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 		method: "PUT"
 	})
 
+	const handleSelectValue = ({type}) => {
+		if(currentUser){
+			const user_select = document.getElementById(currentUser.id+"-role-select");
+			
+			if(user_select && type === "success"){
+				user_select.setAttribute("dv", currentUser.new_role); // Update default value
+			} else {
+				user_select.value = user_select.getAttribute("dv"); // Restore if fail
+			}
+		}
+	}
+
 	const handleRoleChange = () => {
 		if(currentUser) {
 			changeRole({ user_id: currentUser.id, role: currentUser.new_role})
@@ -42,17 +54,25 @@ const RoleList = ({ users, setUsers, pageItems }) => {
                         logout();
                         window.location.href = "/authentication"
                     }
-				} else {
-					const errorMessage = updateError ? updateError : "check console for more details.";
-					alert("Error while changing role of user [" + currentUser.email + "]: " + errorMessage);
+
+					handleSelectValue({type: "success"});
 				}
 			});
 		}
 	};
 
+	const handleRoleChangeError = () => {
+		if(updateError){
+			const errorMessage = updateError ? updateError : "check console for more details.";
+			alert("Error while changing role of user [" + currentUser.email + "]: " + errorMessage);
+			handleSelectValue({type: "error"});
+		}
+	}
+
 	useCustomEffect({functions: [getRoles]}); // on load, get roles
 	useCustomEffect({functions: [() => setFilteredUsers(users)], dependencies: [users]}); // on users change, update filtered users
 	useCustomEffect({functions: [handleRoleChange], dependencies: [currentUser]}); // on current user change, change its role
+	useCustomEffect({functions: [handleRoleChangeError], dependencies: [updateError]}); // on update error, show error
 
 	return (
 		<>
@@ -81,7 +101,7 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 											rolesError ? (
 												<p>{rolesError?.message}</p>
 											) : (
-												<Form.Control as="select" defaultValue={user.role.name} onChange={(e) => setCurrentUser({ id: user.id, email: user.email, new_role: e.target.value })}>
+												<Form.Control as="select" dv={user.role.name} id={user.id+"-role-select"} defaultValue={user.role.name} onChange={(e) => setCurrentUser({ id: user.id, email: user.email, new_role: e.target.value })}>
 													{ roles?.map((role) => (<option key={role.name} value={role.name}>{role.name_translated}</option>)) }
 												</Form.Control>
 											)

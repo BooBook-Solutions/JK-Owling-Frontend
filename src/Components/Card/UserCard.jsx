@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 import { useAuthContext } from '../Context/AuthContext';
+import useCustomEffect from '../../Hooks/useCustomEffect';
 
 function UserCard({ user, type, onDelete }) {
 
@@ -34,13 +35,19 @@ function UserCard({ user, type, onDelete }) {
                         logout();
                         window.location.href = "/authentication"
                     }
-                } else {
-                    const errorMessage = deleteError ? deleteError : "check console for more details.";
-                    alert("Error while deleting user [" + user.email + "]: " + errorMessage);
                 }
             });
         }
     }
+
+    const handleDeleteError = () => {
+        if(deleteError){
+            const errorMessage = deleteError ? deleteError : "check console for more details.";
+            alert("Error while deleting user [" + user.email + "]: " + errorMessage);
+        }
+    }
+
+    useCustomEffect({functions: [handleDeleteError], dependencies: [deleteError]}) // on delete error, show error
 
     return (
         <Card style={cardStyle}>

@@ -8,6 +8,9 @@ const useAPIFetch = ({ url, method = "GET", body = null }) => {
     const [error, setError] = useState(null);
 
     const handleFetch = async (params = null) => {
+        setData(null);
+        setError(null);
+
         const headers = {
             "Content-Type": "application/json",
             ...(token && { "Authorization": `Bearer ${token}` }),
@@ -21,7 +24,7 @@ const useAPIFetch = ({ url, method = "GET", body = null }) => {
         body = params ? { ...body, ...params } : body;
 
         if(body) { options.body = JSON.stringify(body); }
-        
+
         try {
             const response = await fetch(url, options);
             const json_data = await response.json();
@@ -30,7 +33,7 @@ const useAPIFetch = ({ url, method = "GET", body = null }) => {
                 setData(json_data); // used in visual renderings (GET requests)
                 return json_data; // used in POST, PUT and DELETE requests
             }
-        
+            
             throw new Error(json_data?.message || json_data);
 
         } catch (error) {
