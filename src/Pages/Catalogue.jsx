@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 
 import BookList from "../Components/Common/BookList";
@@ -9,7 +9,6 @@ import ErrorPage from "./ErrorPage";
 
 import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
-import useCustomEffect from "../Hooks/useCustomEffect";
 
 function Catalogue(){
 
@@ -17,7 +16,7 @@ function Catalogue(){
         url: getUrl({ endpoint: "BOOKS" })
     })
 
-    useCustomEffect({functions: [getBooks]}); // on load, get books
+    useEffect(() => { getBooks() }, []); // on load, get books
 
     return (
         <>

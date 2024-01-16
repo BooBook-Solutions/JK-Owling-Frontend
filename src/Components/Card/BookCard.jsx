@@ -1,24 +1,24 @@
+import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 
-import { useAuthContext } from '../Context/AuthContext';
 import BookModal from '../Modal/BookModal';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
 
 import getUrl from '../../Endpoints/endpoints';
-import useCustomEffect from '../../Hooks/useCustomEffect';
+import LoadingSpinner from '../Common/Spinner';
 
 function BookCard({ book, type, onUpdate, onDelete }) {
-
-    const { authState } = useAuthContext();
 
     const cardStyle = {
         width: type !== "dashboard" ? 'auto' : '18rem',
         maxWidth: '40rem',
         minWidth: '18rem',
     };
+
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const { handleFetch: deleteBook, error: deleteError } = useAPIFetch({
         url: getUrl({ 
@@ -28,14 +28,9 @@ function BookCard({ book, type, onUpdate, onDelete }) {
         method: "DELETE"
     })
 
-    const { handleFetch: orderBook, error: createError } = useAPIFetch({
-        url: getUrl({ endpoint: "ORDERS" }), 
-        method: "POST", 
-        body: { user_id: authState.user.id, book_id: book.id }
-    })
-
     const handleDelete = () => {
         if(window.confirm("Are you sure you want to delete this book?")) {
+            setIsDeleting(true);
             deleteBook()
             .then((deletedBook) => {
                 if(deletedBook) {
@@ -43,7 +38,8 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                     alert("Book [" + deletedBook.title + "] correctly deleted!");
                     onDelete(deletedBook.id);
                 }
-            });
+            })
+            .then(() => setIsDeleting(false));
         }
     }
 
@@ -54,73 +50,33 @@ function BookCard({ book, type, onUpdate, onDelete }) {
 		}
 	}
 
-    const handleOrder = () => {
-        if(book.quantity === 0) {
-            alert("Book out of stock!");
-            return;
-        }
-        
-        if(authState.isAuth) {
-            const quantity = prompt('Enter the quantity:');
-
-            if(!quantity) return;
-
-            const parsedQuantity = parseInt(Number(quantity), 10);
-
-            if(!isNaN(parsedQuantity) && parsedQuantity > 0 && parsedQuantity <= book.quantity) {
-                orderBook({ quantity: parsedQuantity })
-                .then((order) => {
-                    if(order) {
-                        console.log("Book [" + order.book.title + "] correctly ordered!")
-                        alert("Book [" + order.book.title + "] correctly ordered! Check your orders for more details.");
-                        book.quantity -= parsedQuantity;
-                    }
-                });
-            } else { 
-                alert("Invalid quantity!");
-            }
-        } else {
-            window.location.href = "/authentication?redirect=" + encodeURIComponent(window.location.pathname);
-        }
-    }
-    
-    const handleOrderError = () => {
-		if(createError){
-			const errorMessage = createError ? createError : "check console for more details.";
-            alert("Error while ordering book [" + book.title + "]: " + errorMessage);
-		}
-	}
-
-    useCustomEffect({functions: [handleDeleteError], dependencies: [deleteError]});
-    useCustomEffect({functions: [handleOrderError], dependencies: [createError]});
+    useEffect(() => { handleDeleteError() }, [deleteError]);
 
     return (
-        <Card style={cardStyle}>
-        { type !== "catalogue" && <img alt="Cover" width="100px" style={{padding: "5px"}} src={book.cover}/> }
-        <Card.Body>
-            <Card.Title>{book.title}</Card.Title>
-            <Card.Subtitle className="mb-2 text-muted">{book.author}</Card.Subtitle>
-            <Card.Text><b>Book ID: </b>{book.id}</Card.Text>
-            { type !== "catalogue" && type !== "dashboard" && <Card.Text>{book.description}</Card.Text> }
-        </Card.Body>
-        <Card.Footer><b>Price: </b>{book.price}€</Card.Footer>
-        { type !== "catalogue" && <Card.Footer><b>Quantity: </b>{book.quantity > 0 ? book.quantity : <span style={{color: "red"}}>Out of stock</span>}</Card.Footer> }
-        <Card.Footer>
-            { type === "dashboard" ? (
-                <>
-                <BookModal book={book} onUpdate={onUpdate}/>
-                <Button variant="danger" style={{ marginLeft: '10px' }}  onClick={handleDelete}>Delete</Button>
-                </>
-            ) : (
-                type === "catalogue" ? (
-                <Link to={`/catalogue/${book.id}`}>Details</Link>
-                ) : (
-                <Button variant="primary" onClick={handleOrder}>Order</Button>
-                )
-            )
-            }
-        </Card.Footer>
-        </Card>
+        <>
+            { isDeleting && <LoadingSpinner position="fixed" /> }
+            <Card style={cardStyle}>
+                { type === "dashboard" && <img alt="Cover" width="100px" style={{padding: "5px"}} src={book.cover}/>}
+                <Card.Body>
+                    <Card.Title>{book.title}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">{book.author}</Card.Subtitle>
+                    <Card.Text><b>Book ID: </b>{book.id}</Card.Text>
+                </Card.Body>
+                <Card.Footer><b>Price: </b>{book.price}€</Card.Footer>
+                { type !== "catalogue" && <Card.Footer><b>Quantity: </b>{book.quantity > 0 ? book.quantity : <span style={{color: "red"}}>Out of stock</span>}</Card.Footer> }
+                <Card.Footer>
+                    { type === "dashboard" ? (
+                            <>
+                                <BookModal book={book} onUpdate={onUpdate}/>
+                                <Button variant="danger" style={{ marginLeft: '10px' }}  onClick={handleDelete}>Delete</Button>
+                            </>
+                        ) : (
+                            <Link to={`/catalogue/${book.id}`}>Details</Link>
+                        )
+                    }
+                </Card.Footer>
+            </Card>
+        </>
     );
 }
 

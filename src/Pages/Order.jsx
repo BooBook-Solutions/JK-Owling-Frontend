@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 
 import Navigation from "../Components/Common/Navbar";
@@ -11,7 +11,6 @@ import ErrorPage from "./ErrorPage";
 
 import useAPIFetch from '../Hooks/useAPIFetch';
 import getUrl from "../Endpoints/endpoints";
-import useCustomEffect from "../Hooks/useCustomEffect";
 
 const Order = () => {
 
@@ -24,7 +23,7 @@ const Order = () => {
         })
     })
 
-    useCustomEffect({functions: [getUserOrders]}); // on load, get user orders
+    useEffect(() => { getUserOrders() }, []); // on load, get user orders
 
     return (
         <>

@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
-import useCustomEffect from '../../Hooks/useCustomEffect';
+import LoadingSpinner from '../Common/Spinner';
 
 function BookModal({ book, onCreate, onUpdate }) {
 
@@ -34,6 +34,9 @@ function BookModal({ book, onCreate, onUpdate }) {
         setShow(true);
     }
 
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+
     const { handleFetch: updateBook, error: updateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "BOOK_DETAILS", 
@@ -60,26 +63,30 @@ function BookModal({ book, onCreate, onUpdate }) {
         }
 
         if(book) {
+            handleClose();
+            setIsUpdating(true);
             updateBook({ title, author, description, cover, quantity, price })
             .then((updatedBook) => {
                 if(updatedBook) {
                     console.log("Book [" + updatedBook.id + "] correctly updated!")
                     alert("Book [" + updatedBook.id + "] correctly updated!");
                     onUpdate(updatedBook);
-                    handleClose();
                 }
-            });
+            })
+            .then(() => setIsUpdating(false));
 
         } else {
+            handleClose();
+            setIsCreating(true);
             createBook({ title, author, description, cover, quantity, price })
             .then((createdBook) => {
                 if(createdBook) {
                     console.log("Book [" + createdBook.title + "] correctly created!")
                     alert("Book [" + createdBook.title + "] correctly created!");
                     onCreate(createdBook);
-                    handleClose();
                 }
-            });
+            })
+            .then(() => setIsCreating(false));
         }
     };
 
@@ -97,11 +104,13 @@ function BookModal({ book, onCreate, onUpdate }) {
 		}
 	}
 
-    useCustomEffect({functions: [handleUpdateError], dependencies: [updateError]}); // on update error, show error
-    useCustomEffect({functions: [handleCreateError], dependencies: [createError]}); // on create error, show error
+    useEffect(() => { handleUpdateError() }, [updateError]); // on update error, show error
+    useEffect(() => { handleCreateError() }, [createError]); // on create error, show error
 
     return (
         <>
+        { (isUpdating || isCreating) && <LoadingSpinner position="fixed" /> }
+
         { book ? 
             <Button variant="primary" onClick={handleShow}>Update</Button> : 
             (
@@ -111,7 +120,7 @@ function BookModal({ book, onCreate, onUpdate }) {
             )
         }
 
-        <Modal show={show} onHide={handleClose}>
+        <Modal className="modal" show={show} onHide={handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>{ book ? "Change Book Info" : "Create New Book" }</Modal.Title>
             </Modal.Header>

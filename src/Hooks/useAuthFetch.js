@@ -15,6 +15,7 @@ const useAuthFetch = (url) => {
         let role = "user";
         let isRoleNeeded = false;
         
+        setLoading(true);
         await fetch(getUrl({ 
             endpoint: "USER_EMAIL", 
             queryParams: { user_email: jwtDecode(response.credential).email }
@@ -29,7 +30,6 @@ const useAuthFetch = (url) => {
 
         const body = isRoleNeeded ? { google_token: response.credential, role } : { google_token: response.credential };
 
-        setLoading(true);
         await fetch(url, { 
             method: 'POST',
             headers: {

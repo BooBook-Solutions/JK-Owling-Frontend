@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import OrderCard from '../Card/OrderCard';
 import PageManager from './PageManager';
 import SearchBar from './SearchBar';
@@ -6,7 +6,6 @@ import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
 
 import OrderModal from '../Modal/OrderModal';
-import useCustomEffect from '../../Hooks/useCustomEffect';
 
 const OrderList = ({ orders, pageItems, type }) => {
 
@@ -18,7 +17,7 @@ const OrderList = ({ orders, pageItems, type }) => {
         url: getUrl({ endpoint: "STATUS" })
     })
 
-    useCustomEffect({functions: [getStatuses]}); // on load, get statuses
+    useEffect(() => { getStatuses() }, []); // on load, get statuses
 
     const handleOrderDeletion = (deletedOrderId) => {
         // Remove the deleted order from the state

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Form } from 'react-bootstrap';
 
 import PageManager from '../Common/PageManager';
@@ -6,8 +6,8 @@ import SearchBar from '../Common/SearchBar';
 import { useAuthContext } from '../Context/AuthContext';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
-import useCustomEffect from '../../Hooks/useCustomEffect';
 import getUrl from '../../Endpoints/endpoints';
+import LoadingSpinner from '../Common/Spinner';
 
 const RoleList = ({ users, setUsers, pageItems }) => {
 
@@ -20,6 +20,8 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 	const { handleFetch: getRoles, data: roles, error: rolesError } = useAPIFetch({
 		url: getUrl({ endpoint: "ROLES" })
 	})
+
+	const [isUpdating, setIsUpdating] = useState(false);
 
 	const { handleFetch: changeRole, error: updateError } = useAPIFetch({
 		url: getUrl({ 
@@ -43,6 +45,7 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 
 	const handleRoleChange = () => {
 		if(currentUser) {
+			setIsUpdating(true);
 			changeRole({ user_id: currentUser.id, role: currentUser.new_role})
 			.then((updatedUser) => {
 				if(updatedUser) {
@@ -57,7 +60,8 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 
 					handleSelectValue({type: "success"});
 				}
-			});
+			})
+			.then(() => setIsUpdating(false));
 		}
 	};
 
@@ -69,13 +73,14 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 		}
 	}
 
-	useCustomEffect({functions: [getRoles]}); // on load, get roles
-	useCustomEffect({functions: [() => setFilteredUsers(users)], dependencies: [users]}); // on users change, update filtered users
-	useCustomEffect({functions: [handleRoleChange], dependencies: [currentUser]}); // on current user change, change its role
-	useCustomEffect({functions: [handleRoleChangeError], dependencies: [updateError]}); // on update error, show error
+	useEffect(() => { getRoles() }, []); // on load, get roles
+	useEffect(() => { setFilteredUsers(users) }, [users]); // on users change, update filtered users
+	useEffect(() => { handleRoleChange() }, [currentUser]); // on current user change, change its role
+	useEffect(() => { handleRoleChangeError() }, [updateError]); // on update error, show error
 
 	return (
 		<>
+		{ isUpdating && <LoadingSpinner position="fixed" /> }
 		{ users.length > 0 ? (
 			<div>
 				<div className="add-button-container">

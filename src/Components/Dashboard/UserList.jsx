@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserCard from '../Card/UserCard';
 import PageManager from '../Common/PageManager';
 import SearchBar from '../Common/SearchBar';
-import useCustomEffect from '../../Hooks/useCustomEffect';
 
 const UserList = ({ users, setUsers, pageItems }) => {
 
@@ -16,7 +15,7 @@ const UserList = ({ users, setUsers, pageItems }) => {
         setFilteredUsers(prevUsers => prevUsers.filter(user => user.id !== deletedUserId));
     };
 
-    useCustomEffect({functions: [() => setFilteredUsers(users)], dependencies: [users]}); //when users change, update filtered users
+    useEffect(() => { setFilteredUsers(users) }, [users]); //when users change, update filtered users
 
     return (
         <>

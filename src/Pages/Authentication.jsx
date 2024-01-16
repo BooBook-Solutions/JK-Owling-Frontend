@@ -18,7 +18,7 @@ const Authentication = () => {
         <Container className="centered-div">
             { !loading && <h1>Authenticate to continue</h1> }
             { error && <p style={{ color: "red" }}>{error}</p>}
-            { loading ? (<LoadingSpinner />) : (
+            { loading ? (<LoadingSpinner position="fixed" />) : (
                 <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
                     <GoogleLogin
                         onSuccess={handleGoogle}

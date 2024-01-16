@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
-import useCustomEffect from '../../Hooks/useCustomEffect';
+import LoadingSpinner from '../Common/Spinner';
 
 function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
 
@@ -23,6 +23,9 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
         })
         setShow(true);
     }
+
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
 
     const { handleFetch: updateOrder, error: updateError } = useAPIFetch({
         url: getUrl({ 
@@ -51,15 +54,17 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                 return;
             }
 
+            handleClose();
+            setIsUpdating(true);
             updateOrder({ status })
             .then((updatedOrder) => {
                 if(updatedOrder) {
                     console.log("Order [" + updatedOrder.id + "] correctly updated!")
                     alert("Order [" + updatedOrder.id + "] correctly updated!");
                     onUpdate(updatedOrder);
-                    handleClose();
                 }
             })
+            .then(() => setIsUpdating(false));
             
         } else {
             if(![user.id, book.id, quantity].every(Boolean) || quantity <= 0) {
@@ -67,15 +72,17 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                 return;
             }
             
+            handleClose();
+            setIsCreating(true);
             createOrder({ user_id: user.id, book_id: book.id, quantity })
             .then((createdOrder) => {
                 if(createdOrder) {
                     console.log("Order [" + createdOrder.id + "] correctly created!")
                     alert("Order [" + createdOrder.id + "] correctly created!");
                     onCreate(createdOrder);
-                    handleClose();
                 }
-            });
+            })
+            .then(() => setIsCreating(false));
         }
     };
 
@@ -93,11 +100,13 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
 		}
 	}
 
-    useCustomEffect({functions: [handleUpdateError], dependencies: [updateError]}); // on update error, show error
-    useCustomEffect({functions: [handleCreateError], dependencies: [createError]}); // on create error, show error
+    useEffect(() => { handleUpdateError() }, [updateError]); // on update error, show error
+    useEffect(() => { handleCreateError() }, [createError]); // on create error, show error
 
     return (
         <>
+        { (isUpdating || isCreating) && <LoadingSpinner position="fixed" /> }
+
         { order ? 
             <Button variant="primary" onClick={handleShow}>Update</Button> :
             (
