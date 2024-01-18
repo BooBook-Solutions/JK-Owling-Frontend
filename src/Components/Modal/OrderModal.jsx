@@ -53,7 +53,7 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                 alert("Status must be selected!")
                 return;
             }
-            console.log(status)
+
             handleClose();
             setIsUpdating(true);
             updateOrder({ status })
@@ -137,7 +137,7 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                 { order && 
                     <Form.Group className="mb-3">
                         <Form.Label>Status</Form.Label>
-                        <Form.Control as="select" defaultValue={currentOrder?.status.name} onChange={(e) => setCurrentOrder({ ...currentOrder, status: e.target.value })}>
+                        <Form.Control as="select" defaultValue={currentOrder?.status} onChange={(e) => setCurrentOrder({ ...currentOrder, status: e.target.value })}>
                             { statuses?.map((status) => (<option key={status.name} value={status.name}>{status.name_translated}</option>)) }
                         </Form.Control>
                     </Form.Group>
