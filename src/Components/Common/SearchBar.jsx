@@ -26,7 +26,7 @@ const SearchBar = ({ items, setItems, placeholder }) => {
 		else 
 			setItems(items);
 	};
-
+	
 	return (
 		<div>
 			<input type="text" placeholder={placeholder} onChange={(e) => handleSearch(e.target.value)}/>

@@ -57,8 +57,8 @@ function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
                 <Card.Footer><b>Quantity: </b>{order?.quantity}</Card.Footer>
                 <Card.Footer><b>Status: </b><span className={statusClass}>{order?.status.name_translated}</span></Card.Footer>
                 <Card.Footer>
-                    <OrderModal order={order} type={"update"} statuses={statuses} onUpdate={onUpdate}/>
-                    <Button variant="danger" style={{ marginLeft: '10px' }} onClick={handleDelete}>Delete</Button>
+                    { type === "dashboard" && <OrderModal order={order} type={"update"} statuses={statuses} onUpdate={onUpdate}/> }
+                    <Button variant="danger" onClick={handleDelete}>Delete</Button>
                 </Card.Footer>
             </Card>
         </>

@@ -5,13 +5,17 @@ import SearchBar from '../Common/SearchBar';
 
 const UserList = ({ users, setUsers, pageItems }) => {
 
-    const [filteredUsers, setFilteredUsers] = useState(users);
+    const [filteredUsers, _setFilteredUsers] = useState(users);
+
+    function setFilteredUsers(value) {
+        _setFilteredUsers(value);
+        setUsers(value);
+    }
 
     const { pageManager, currentItems: currentUsers } = PageManager(filteredUsers, pageItems);
 
     const handleUserDeletion = (deletedUserId) => {
         // Filter out the deleted user from the state
-        setUsers(prevUsers => prevUsers.filter(user => user.id !== deletedUserId));
         setFilteredUsers(prevUsers => prevUsers.filter(user => user.id !== deletedUserId));
     };
 

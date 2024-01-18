@@ -16,7 +16,7 @@ const Order = () => {
 
     const { authState } = useAuthContext();
     
-    const { handleFetch: getUserOrders, data: orders, error } = useAPIFetch({
+    const { handleFetch: getUserOrders, data: orders, setData: setOrders, error } = useAPIFetch({
         url: getUrl({ 
             endpoint: "ORDERS", 
             queryParams: { user_id: authState.user.id }
@@ -38,7 +38,7 @@ const Order = () => {
                     <Container className="p-3">
                         <Container id="orders" className="mt-5 mb-5">
                             <h1>Orders</h1>
-                            { orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"user_orders"} /> : "No orders found." }
+                            { orders.length > 0 ? <OrderList orders={orders} setOrders={setOrders} pageItems={6} type={"user_orders"} /> : "No orders found." }
                         </Container>
                     </Container>
                 </>

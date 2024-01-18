@@ -18,10 +18,10 @@ function Dashboard(){
 	const { handleFetch: getUsers, data: users, setData: setUsers, error: userError } = useAPIFetch({
 		url: getUrl({ endpoint: "USERS" })
 	})
-	const { handleFetch: getBooks, data: books, error: bookError } = useAPIFetch({
+	const { handleFetch: getBooks, data: books, setData: setBooks, error: bookError } = useAPIFetch({
 		url: getUrl({ endpoint: "BOOKS" })
 	})
-	const { handleFetch: getOrders, data: orders, error: orderError } = useAPIFetch({
+	const { handleFetch: getOrders, data: orders, setData: setOrders, error: orderError } = useAPIFetch({
 		url: getUrl({ endpoint: "ORDERS" })
 	})
 
@@ -71,7 +71,7 @@ function Dashboard(){
 					bookError ? (
 						<p>{bookError?.detail}</p>
 					) : (
-						<BookList books={books} pageItems={6} type={"dashboard"} />
+						<BookList books={books} setBooks={setBooks} pageItems={6} type={"dashboard"} />
 					)
 				)}
 				</Container>
@@ -84,7 +84,7 @@ function Dashboard(){
 					orderError ? (
 						<p>{orderError?.detail}</p>
 					) : (
-						<OrderList orders={orders} pageItems={6} type={"dashboard"} />
+						<OrderList orders={orders} setOrders={setOrders} pageItems={6} type={"dashboard"} />
 					)
 				)}
 				</Container>

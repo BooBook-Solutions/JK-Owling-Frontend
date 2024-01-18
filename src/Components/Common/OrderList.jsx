@@ -7,10 +7,15 @@ import getUrl from '../../Endpoints/endpoints';
 
 import OrderModal from '../Modal/OrderModal';
 
-const OrderList = ({ orders, pageItems, type }) => {
+const OrderList = ({ orders, setOrders, pageItems, type }) => {
 
-    const [filteredOrders, setFilteredOrders] = useState(orders);
-
+    const [filteredOrders, _setFilteredOrders] = useState(orders);
+    
+    function setFilteredOrders(value) {
+        _setFilteredOrders(value);
+        setOrders(value);
+    }
+    
     const { pageManager, currentItems: currentOrders } = PageManager(filteredOrders, pageItems);
 
     const { handleFetch: getStatuses, data: statuses, error: statusesError } = useAPIFetch({
@@ -37,19 +42,19 @@ const OrderList = ({ orders, pageItems, type }) => {
     return (
         <div>
             <div className="add-button-container">
-                { orders.length > 0 && <SearchBar items={orders} setItems={setFilteredOrders} placeholder={"Search orders..."} /> }
-                { orders.length === 0 && <p style={{ paddingTop: "15px" }}>There are no orders to show.</p> }
-                { type === "dashboard" && <OrderModal onCreate={handleOrderCreation} /> }
+                {orders.length > 0 && <SearchBar items={orders} setItems={setFilteredOrders} placeholder={"Search orders..."} />}
+                {orders.length === 0 && <p style={{ paddingTop: "15px" }}>There are no orders to show.</p>}
+                {type === "dashboard" && <OrderModal onCreate={handleOrderCreation} />}
             </div>
             <div className="row">
-                { !statusesError &&
+                {!statusesError &&
                     currentOrders.map((order) => (
-                    <div key={order.id} className="col-md-4 mb-3">
-                        <OrderCard order={order} type={type} statuses={statuses} onUpdate={handleOrderUpdate} onDelete={handleOrderDeletion}/>
-                    </div>
-                ))}
+                        <div key={order.id} className="col-md-4 mb-3">
+                            <OrderCard order={order} type={type} statuses={statuses} onUpdate={handleOrderUpdate} onDelete={handleOrderDeletion} />
+                        </div>
+                    ))}
             </div>
-            { orders.length > 0 && pageManager }
+            {orders.length > 0 && pageManager}
         </div>
     );
 };

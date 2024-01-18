@@ -4,11 +4,16 @@ import PageManager from './PageManager';
 import SearchBar from './SearchBar';
 import BookModal from '../Modal/BookModal';
 
-const BookList = ({ books, pageItems, type }) => {
+const BookList = ({ books, setBooks, pageItems, type }) => {
 
     const classname = type === "dashboard" ? "col-md-4 mb-3" : "col-md-3 mb-3";
 
-    const [filteredBooks, setFilteredBooks] = useState(books);
+    const [filteredBooks, _setFilteredBooks] = useState(books);
+
+    function setFilteredBooks(value) {
+        _setFilteredBooks(value);
+        setBooks(value);
+    }
 
     const { pageManager, currentItems: currentBooks } = PageManager(filteredBooks, pageItems);
 

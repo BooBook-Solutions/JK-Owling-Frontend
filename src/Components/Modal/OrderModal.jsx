@@ -108,7 +108,7 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
         { (isUpdating || isCreating) && <LoadingSpinner position="fixed" /> }
 
         { order ? 
-            <Button variant="primary" onClick={handleShow}>Update</Button> :
+            <Button variant="primary" style={{ marginRight: '10px' }} onClick={handleShow}>Update</Button> :
             (
             <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
                 <box-icon type="solid" color="white" name="plus-square"></box-icon>
