@@ -43,7 +43,7 @@ function Dashboard(){
 					<LoadingSpinner />
 				) : (
 					userError ? (
-						<p>{userError?.message}</p>
+						<p>{userError?.detail}</p>
 					) : (
 						<UserList users={users} setUsers={setUsers} pageItems={6}/>
 					)
@@ -56,7 +56,7 @@ function Dashboard(){
 					<LoadingSpinner />
 				) : (
 					userError ? (
-						<p>{userError?.message}</p>
+						<p>{userError?.detail}</p>
 					) : (
 						<RoleList users={users} setUsers={setUsers} pageItems={6}/>
 					)
@@ -69,7 +69,7 @@ function Dashboard(){
 					<LoadingSpinner />
 				) : (
 					bookError ? (
-						<p>{bookError?.message}</p>
+						<p>{bookError?.detail}</p>
 					) : (
 						<BookList books={books} pageItems={6} type={"dashboard"} />
 					)
@@ -82,7 +82,7 @@ function Dashboard(){
 					<LoadingSpinner />
 				) : (
 					orderError ? (
-						<p>{orderError?.message}</p>
+						<p>{orderError?.detail}</p>
 					) : (
 						<OrderList orders={orders} pageItems={6} type={"dashboard"} />
 					)

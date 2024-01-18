@@ -34,11 +34,11 @@ const useAPIFetch = ({ url, method = "GET", body = null }) => {
                 return json_data; // used in POST, PUT and DELETE requests
             }
             
-            throw new Error(json_data?.message || json_data);
+            throw new Error(json_data?.detail || json_data);
 
         } catch (error) {
-            console.error("Fetch error:", error?.message);
-            setError(error?.message);
+            console.error("Fetch error:", error?.detail);
+            setError(error?.detail);
             return null;
         }
     }

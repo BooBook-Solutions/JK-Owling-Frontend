@@ -104,7 +104,7 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 											<span>Loading roles...</span>
 										) : (
 											rolesError ? (
-												<p>{rolesError?.message}</p>
+												<p>{rolesError?.detail}</p>
 											) : (
 												<Form.Control as="select" dv={user.role.name} id={user.id+"-role-select"} defaultValue={user.role.name} onChange={(e) => setCurrentUser({ id: user.id, email: user.email, new_role: e.target.value })}>
 													{ roles?.map((role) => (<option key={role.name} value={role.name}>{role.name_translated}</option>)) }

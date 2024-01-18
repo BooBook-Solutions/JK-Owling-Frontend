@@ -31,7 +31,7 @@ const Order = () => {
             <LoadingSpinner />
         ) : (
             error ? (
-                <ErrorPage eCode={error?.status} eText={error?.message} />
+                <ErrorPage eCode={error?.status} eText={error?.detail} />
             ) : (
                 <>
                     <Navigation />
