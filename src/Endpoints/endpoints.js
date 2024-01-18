@@ -7,8 +7,11 @@ const endpoints = {
     BOOKS: () => "/books",
     ORDERS: () => "/orders",
     STATUS: () => "/orders/status",
+    USER_EMAIL: () => "/users/email",
     USER_DETAILS: (params) => `/users/${params?.user_id}`,
     BOOK_DETAILS: (params) => `/books/${params?.book_id}`,
+    BOOK_MORE_INFO: (params) => `/books/${params?.book_id}/info`,
+    BOOK_LISTINGS: (params) => `/books/${params?.book_id}/listings`,
     ORDER_DETAILS: (params) => `/orders/${params?.order_id}`,
 };
 

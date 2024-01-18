@@ -4,11 +4,16 @@ import PageManager from './PageManager';
 import SearchBar from './SearchBar';
 import BookModal from '../Modal/BookModal';
 
-const BookList = ({ books, pageItems, type }) => {
+const BookList = ({ books, setBooks, pageItems, type }) => {
 
     const classname = type === "dashboard" ? "col-md-4 mb-3" : "col-md-3 mb-3";
 
-    const [filteredBooks, setFilteredBooks] = useState(books);
+    const [filteredBooks, _setFilteredBooks] = useState(books);
+
+    function setFilteredBooks(value) {
+        _setFilteredBooks(value);
+        setBooks(value);
+    }
 
     const { pageManager, currentItems: currentBooks } = PageManager(filteredBooks, pageItems);
 
@@ -30,7 +35,8 @@ const BookList = ({ books, pageItems, type }) => {
     return (
         <div>
             <div className="add-button-container">
-                <SearchBar items={books} setItems={setFilteredBooks} placeholder={"Search books..."} />
+                { books.length > 0 && <SearchBar items={books} setItems={_setFilteredBooks} placeholder={"Search books..."} />}
+                { books.length === 0 && <p style={{ paddingTop: "15px" }}>There are no books to show.</p> }
                 { type === "dashboard" && <BookModal onCreate={handleBookCreation} /> }
             </div>
             <div className="row">
@@ -40,7 +46,7 @@ const BookList = ({ books, pageItems, type }) => {
                 </div>
                 ))}
             </div>
-            { pageManager }
+            { books.length > 0 && pageManager }
         </div>
     );
 };

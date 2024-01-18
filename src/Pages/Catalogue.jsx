@@ -16,9 +16,7 @@ function Catalogue(){
         url: getUrl({ endpoint: "BOOKS" })
     })
 
-    useEffect(() => {
-        getBooks();
-    }, []) // eslint-disable-line
+    useEffect(() => { getBooks() }, []); // on load, get books
 
     return (
         <>
@@ -26,13 +24,13 @@ function Catalogue(){
             <LoadingSpinner />
         ) : (
             error ? (
-                <ErrorPage eCode={error?.status} eText={error?.message} />
+                <ErrorPage eCode={error?.status} eText={error?.detail} />
             ) : (
                 <>
                     <Navigation />
-                    <Container className="m-5 p-5">
+                    <Container className="p-3">
                         <h1>Catalogue</h1>
-                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "Empty" }
+                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "No books found." }
                     </Container>
                 </>
             )

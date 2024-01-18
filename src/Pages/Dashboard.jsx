@@ -15,88 +15,84 @@ import "../Styles/dashboard.scss";
 
 function Dashboard(){
 
-  const { handleFetch: getUsers, data: users, setData: setUsers, error: userError } = useAPIFetch({
-    url: getUrl({ endpoint: "USERS" })
-  })
-  const { handleFetch: getBooks, data: books, error: bookError } = useAPIFetch({
-    url: getUrl({ endpoint: "BOOKS" })
-  })
-  const { handleFetch: getOrders, data: orders, error: orderError } = useAPIFetch({
-    url: getUrl({ endpoint: "ORDERS" })
-  })
+	const { handleFetch: getUsers, data: users, setData: setUsers, error: userError } = useAPIFetch({
+		url: getUrl({ endpoint: "USERS" })
+	})
+	const { handleFetch: getBooks, data: books, setData: setBooks, error: bookError } = useAPIFetch({
+		url: getUrl({ endpoint: "BOOKS" })
+	})
+	const { handleFetch: getOrders, data: orders, setData: setOrders, error: orderError } = useAPIFetch({
+		url: getUrl({ endpoint: "ORDERS" })
+	})
 
-  // On load, get users, books and orders
-  // eslint-disable-next-line
-  useEffect(() => {
-    getUsers();
-    getBooks();
-    getOrders();
-  }, []) // eslint-disable-line
+	useEffect(() => { getUsers() }, []); // On load, get users
+	useEffect(() => { getBooks() }, []); // On load, get books
+	useEffect(() => { getOrders() }, []); // On load, get orders
 
-  return (
-    <>
-    <div className="main-wrapper">
+	return (
+		<>
+		<div className="main-wrapper">
 
-      <Sidebar />
+			<Sidebar />
 
-      <Container className="main-container container-fluid">
+			<main className="main-container container-fluid">
 
-        <Container id="users" className="mt-3 mb-5">
-          <h1>Users</h1>
-          { !users && !userError ? (
-              <LoadingSpinner />
-          ) : (
-              userError ? (
-                <p>{userError?.message}</p>
-              ) : (
-                users.length > 0 ? <UserList users={users} setUsers={setUsers} pageItems={6}/> : "Empty" 
-              )
-          )}
-        </Container>
+				<Container id="users" className="mt-3 mb-5">
+				<h1>Users</h1>
+				{ !users && !userError ? (
+					<LoadingSpinner />
+				) : (
+					userError ? (
+						<p>{userError?.detail}</p>
+					) : (
+						<UserList users={users} setUsers={setUsers} pageItems={6}/>
+					)
+				)}
+				</Container>
 
-        <Container id="roles" className="mt-5 mb-5">
-          <h1>Roles</h1>
-          { !users && !userError ? (
-              <LoadingSpinner />
-          ) : (
-              userError ? (
-                <p>{userError?.message}</p>
-              ) : (
-                users.length > 0 ? <RoleList users={users} pageItems={6}/> : "Empty" 
-              )
-          )}
-        </Container>
-      
-        <Container id="books" className="mt-5 mb-5">
-          <h1>Books</h1>
-          { !books && !bookError ? (
-              <LoadingSpinner />
-          ) : (
-               bookError ? (
-                <p>{bookError?.message}</p>
-              ) : (
-                books.length > 0 ? <BookList books={books} pageItems={6} type={"dashboard"} /> : "Empty" 
-              )
-          )}
-        </Container>
-            
-        <Container id="orders" className="mt-5 mb-5">
-          <h1>Orders</h1>
-          { !orders && !orderError ? (
-              <LoadingSpinner />
-          ) : (
-               orderError ? (
-                <p>{orderError?.message}</p>
-              ) : (
-                orders.length > 0 ? <OrderList orders={orders} pageItems={6} type={"dashboard"} /> : "Empty" 
-              )
-          )}
-        </Container>
-        
-      </Container>
-    </div>
-    </>
-  );
+				<Container id="roles" className="mt-5 mb-5">
+				<h1>Roles</h1>
+				{ !users && !userError ? (
+					<LoadingSpinner />
+				) : (
+					userError ? (
+						<p>{userError?.detail}</p>
+					) : (
+						<RoleList users={users} setUsers={setUsers} pageItems={6}/>
+					)
+				)}
+				</Container>
+			
+				<Container id="books" className="mt-5 mb-5">
+				<h1>Books</h1>
+				{ !books && !bookError ? (
+					<LoadingSpinner />
+				) : (
+					bookError ? (
+						<p>{bookError?.detail}</p>
+					) : (
+						<BookList books={books} setBooks={setBooks} pageItems={6} type={"dashboard"} />
+					)
+				)}
+				</Container>
+					
+				<Container id="orders" className="mt-5 mb-5">
+				<h1>Orders</h1>
+				{ !orders && !orderError ? (
+					<LoadingSpinner />
+				) : (
+					orderError ? (
+						<p>{orderError?.detail}</p>
+					) : (
+						<OrderList orders={orders} setOrders={setOrders} pageItems={6} type={"dashboard"} />
+					)
+				)}
+				</Container>
+				
+			</main>
+		</div>
+		</>
+	);
 }
 
 export default Dashboard;

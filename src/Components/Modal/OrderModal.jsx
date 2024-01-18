@@ -1,93 +1,114 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import LoadingSpinner from '../Common/Spinner';
 
 function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
 
+    const [currentOrder, setCurrentOrder] = useState(null);
+
     const [show, setShow] = useState(false);
-
-    const [user, setUser] = useState(order ? order.user : "");
-    const [book, setBook] = useState(order ? order.book : "");
-    const [status, setStatus] = useState(order ? order.status : "pending");
-    const [quantity, setQuantity] = useState(order ? order.quantity : "");
-
-    const handleUserChange = (e) => setUser(e.target.value);
-    const handleBookChange = (e) => setBook(e.target.value);
-    const handleQuantityChange = (e) => {
-        e.target.value = parseInt(e.target.value, 10);
-        setQuantity(e.target.value);
-    }
-    const handleStatusChange = (e) => setStatus(e.target.value);
-
     const handleClose = () => setShow(false);
-    const handleShow = () => {
-        setUser(order ? order.user : "");
-        setBook(order ? order.book : "");
-        setQuantity(order ? order.quantity : "");
-        setStatus(order ? order.status : "pending");
+    const handleShow = () => setFormFields();
+    
+    const setFormFields = () => {
+        setCurrentOrder({
+            user: order?.user,
+            book: order?.book,
+            quantity: order?.quantity,
+            status: order?.status.name
+        })
         setShow(true);
     }
 
-    const { handleFetch: updateOrder } = useAPIFetch({
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+
+    const { handleFetch: updateOrder, error: updateError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDER_DETAILS", 
           pathParams: { order_id: order?.id }
         }), 
         method: "PUT",
-        body: { order_id: order?.id, quantity: parseInt(quantity, 10), status: status }
+        body: { order_id: order?.id }
     })
 
-    const { handleFetch: createOrder } = useAPIFetch({
+    const { handleFetch: createOrder, error: createError } = useAPIFetch({
         url: getUrl({ 
           endpoint: "ORDERS"
         }), 
-        method: "POST",
-        body: { user_id: user, book_id: book, quantity: parseInt(quantity, 10) }
+        method: "POST"
     })
 
     const handleSaveChanges = () => {
 
-        const parsedQuantity = parseInt(quantity, 10);
-        
-        if (![user, book, quantity, parsedQuantity, status].every(Boolean) || parsedQuantity <= 0) {
-            alert("Please fill all the fields correctly!");
-        } else { 
-            if(order) {
-                if(parsedQuantity !== order.quantity || status !== order.status) {
-                    updateOrder().then((updatedOrder) => {
-                        if(updatedOrder) {
-                            console.log("Order [" + updatedOrder.id + "] correctly updated!")
-                            alert("Order [" + updatedOrder.id + "] correctly updated!");
-                            onUpdate(updatedOrder);
-                            handleClose();
-                        } else {
-                            alert("Error while updating order [" + order.id + "]. Check console for more details.");
-                        }
-                    });
+        const { user, book, quantity, status } = currentOrder;
+
+        if(order) {
+            // Can add quantity controls
+            if(![status].every(Boolean)) {
+                alert("Status must be selected!")
+                return;
+            }
+
+            handleClose();
+            setIsUpdating(true);
+            updateOrder({ status })
+            .then((updatedOrder) => {
+                if(updatedOrder) {
+                    console.log("Order [" + updatedOrder.id + "] correctly updated!")
+                    alert("Order [" + updatedOrder.id + "] correctly updated!");
+                    onUpdate(updatedOrder);
                 }
-                else alert("No changes detected!");
-            } else {
-                createOrder().then((createdOrder) => {
-                    if(createdOrder) {
-                        console.log("Order [" + createdOrder.id + "] correctly created!")
-                        alert("Order [" + createdOrder.id + "] correctly created!");
-                        onCreate(createdOrder);
-                        handleClose();
-                    } else {
-                        alert("Error while creating order. Check console for more details.");
-                    }
-                });
-            } 
+            })
+            .then(() => setIsUpdating(false));
+            
+        } else {
+            if(![user.id, book.id, quantity].every(Boolean) || quantity <= 0) {
+                alert("Please fill all the fields correctly! Quantity must be a positive number.");
+                return;
+            }
+            
+            handleClose();
+            setIsCreating(true);
+            createOrder({ user_id: user.id, book_id: book.id, quantity })
+            .then((createdOrder) => {
+                if(createdOrder) {
+                    console.log("Order [" + createdOrder.id + "] correctly created!")
+                    alert("Order [" + createdOrder.id + "] correctly created!");
+                    onCreate(createdOrder);
+                }
+            })
+            .then(() => setIsCreating(false));
         }
     };
 
+    const handleUpdateError = () => {
+		if(updateError){
+			const errorMessage = updateError ? updateError : "check console for more details.";
+            alert("Error while updating order [" + order.id + "]: " + errorMessage);
+		}
+	}
+
+    const handleCreateError = () => {
+		if(createError){
+			const errorMessage = createError ? createError : "check console for more details.";
+            alert("Error while creating order: " + errorMessage);
+		}
+	}
+
+    useEffect(() => { handleUpdateError() }, [updateError]); // on update error, show error
+    useEffect(() => { handleCreateError() }, [createError]); // on create error, show error
+
     return (
         <>
+        { (isUpdating || isCreating) && <LoadingSpinner position="fixed" /> }
+
         { order ? 
-            <Button variant="primary" onClick={handleShow}>Update</Button> :
+            <Button variant="primary" style={{ marginRight: '10px' }} onClick={handleShow}>Update</Button> :
             (
             <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
                 <box-icon type="solid" color="white" name="plus-square"></box-icon>
@@ -102,21 +123,21 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
             <Modal.Body>
             <Form>
                 <Form.Group className="mb-3">
-                    <Form.Label>User ID</Form.Label>
-                    <Form.Control type="text" placeholder="user id" defaultValue={user ? user.id + " - " + user.email : ""} disabled={type === "dashboard"} onChange={handleUserChange} autoFocus/>
+                    <Form.Label>User ID { currentOrder?.user?.email && " - " + currentOrder?.user?.email }</Form.Label>
+                    <Form.Control type="text" placeholder="user id" defaultValue={currentOrder?.user?.id} disabled={type === "update"} onChange={(e) => setCurrentOrder({ ...currentOrder, user: { ...currentOrder.user, id: e.target.value }})} autoFocus/>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Book ID</Form.Label>
-                    <Form.Control type="text" placeholder="book id" defaultValue={book ? book.id + " - " + book.title : ""} disabled={type === "dashboard"} onChange={handleBookChange} />
+                    <Form.Label>Book ID { currentOrder?.book?.title && " - " + currentOrder?.book?.title }</Form.Label>
+                    <Form.Control type="text" placeholder="book id" defaultValue={currentOrder?.book?.id} disabled={type === "update"} onChange={(e) => setCurrentOrder({ ...currentOrder, book: { ...currentOrder.book, id: e.target.value }})} />
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Quantity</Form.Label>
-                    <Form.Control type="number" min={0} step={1} placeholder="quantity" defaultValue={quantity} onChange={handleQuantityChange} />
+                    <Form.Control type="number" min={0} step={1} placeholder="quantity" disabled={type === "update"} defaultValue={currentOrder?.quantity} onChange={(e) => setCurrentOrder({ ...currentOrder, quantity: parseInt(Number(e.target?.value), 10) })} />
                 </Form.Group>
                 { order && 
                     <Form.Group className="mb-3">
                         <Form.Label>Status</Form.Label>
-                        <Form.Control as="select" defaultValue={status} onChange={handleStatusChange}>
+                        <Form.Control as="select" defaultValue={currentOrder?.status} onChange={(e) => setCurrentOrder({ ...currentOrder, status: e.target.value })}>
                             { statuses?.map((status) => (<option key={status.name} value={status.name}>{status.name_translated}</option>)) }
                         </Form.Control>
                     </Form.Group>

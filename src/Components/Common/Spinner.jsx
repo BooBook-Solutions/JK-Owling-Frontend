@@ -1,10 +1,10 @@
 import Spinner from 'react-bootstrap/Spinner';
 
-function LoadingSpinner() {
+function LoadingSpinner({position = "relative"}) {
   return (
-    <div className="centered-div">
-        <Spinner animation="border" role="status" />
-    </div>
+	<div className="overlay" style={{position: position}}>
+		<Spinner animation="border" role="status" />
+	</div>
   );
 }
 
