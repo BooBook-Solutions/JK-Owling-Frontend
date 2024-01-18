@@ -11,7 +11,7 @@ const Home = () => {
             <div className="centered-div">
                 <Button variant="link" onClick={() => window.location.href="/catalogue"}>Go to catalogue</Button>
                 <br />
-                <p style={{ fontSize: "20px" }}>We are always available at <b>pincopallino@gmail.com</b></p>
+                <p style={{ fontSize: "20px" }}>We are always available at <b>jkowling@boobook-solutions.com</b></p>
                 <br/><br/>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <div style={{ margin: "0px 20px" }}>
