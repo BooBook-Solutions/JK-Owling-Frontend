@@ -42,7 +42,7 @@ const OrderList = ({ orders, setOrders, pageItems, type }) => {
     return (
         <div>
             <div className="add-button-container">
-                {orders.length > 0 && <SearchBar items={orders} setItems={setFilteredOrders} placeholder={"Search orders..."} />}
+                {orders.length > 0 && <SearchBar items={orders} setItems={_setFilteredOrders} placeholder={"Search orders..."} />}
                 {orders.length === 0 && <p style={{ paddingTop: "15px" }}>There are no orders to show.</p>}
                 {type === "dashboard" && <OrderModal onCreate={handleOrderCreation} />}
             </div>

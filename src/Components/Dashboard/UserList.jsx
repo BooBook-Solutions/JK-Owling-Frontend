@@ -26,7 +26,7 @@ const UserList = ({ users, setUsers, pageItems }) => {
         { users.length > 0 ? (
             <div>
                 <div className="add-button-container">
-                    <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
+                    <SearchBar items={users} setItems={_setFilteredUsers} placeholder={"Search users..."} />
                 </div>
                 <div className="row">
                     { currentUsers.map((user) => (

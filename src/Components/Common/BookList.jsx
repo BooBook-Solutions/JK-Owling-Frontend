@@ -35,7 +35,7 @@ const BookList = ({ books, setBooks, pageItems, type }) => {
     return (
         <div>
             <div className="add-button-container">
-                { books.length > 0 && <SearchBar items={books} setItems={setFilteredBooks} placeholder={"Search books..."} />}
+                { books.length > 0 && <SearchBar items={books} setItems={_setFilteredBooks} placeholder={"Search books..."} />}
                 { books.length === 0 && <p style={{ paddingTop: "15px" }}>There are no books to show.</p> }
                 { type === "dashboard" && <BookModal onCreate={handleBookCreation} /> }
             </div>
