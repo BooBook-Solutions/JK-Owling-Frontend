@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "../Components/Context/AuthContext";
+import { json } from "react-router-dom";
 
 const useAPIFetch = ({ url, method = "GET", body = null }) => {
 
@@ -34,11 +35,11 @@ const useAPIFetch = ({ url, method = "GET", body = null }) => {
                 return json_data; // used in POST, PUT and DELETE requests
             }
             
-            throw new Error(json_data?.detail || json_data);
+            throw new Error(json_data?.detail);
 
-        } catch (error) {
-            console.error("Fetch error:", error?.detail);
-            setError(error?.detail);
+        } catch (e) {
+            console.error("Fetch error:", e);
+            setError(e);
             return null;
         }
     }

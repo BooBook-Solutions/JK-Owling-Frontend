@@ -148,7 +148,7 @@ const Book = () => {
                                     <Row className="ms-2 g-2">
                                         {bookMore.languages.map((language, index) => (
                                             <Col key={index}>
-                                                <Badge pill key={index} bg="secondary">{language}</Badge>
+                                                <Badge pill bg="secondary">{language}</Badge>
                                             </Col>
                                         ))}
                                     </Row>

@@ -45,11 +45,11 @@ const useAuthFetch = (url) => {
         .then((data) => { 
             if(data?.token){
                 login(data?.token);
-            } else throw new Error(data?.detail || data);
+            } else throw new Error(data?.detail);
         })
-        .catch((error) => {
-            console.error("Fetch error:", error?.detail);
-            setError(error?.detail);
+        .catch((e) => {
+            console.error("Fetch error:", e);
+            setError(e);
         });
     }
 
