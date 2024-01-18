@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Form } from 'react-bootstrap';
 
 import PageManager from '../Common/PageManager';
@@ -6,8 +6,8 @@ import SearchBar from '../Common/SearchBar';
 import { useAuthContext } from '../Context/AuthContext';
 
 import useAPIFetch from '../../Hooks/useAPIFetch';
-import useCustomEffect from '../../Hooks/useCustomEffect';
 import getUrl from '../../Endpoints/endpoints';
+import LoadingSpinner from '../Common/Spinner';
 
 const RoleList = ({ users, setUsers, pageItems }) => {
 
@@ -21,6 +21,8 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 		url: getUrl({ endpoint: "ROLES" })
 	})
 
+	const [isUpdating, setIsUpdating] = useState(false);
+
 	const { handleFetch: changeRole, error: updateError } = useAPIFetch({
 		url: getUrl({ 
 			endpoint: "USER_DETAILS", 
@@ -29,8 +31,21 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 		method: "PUT"
 	})
 
+	const handleSelectValue = ({type}) => {
+		if(currentUser){
+			const user_select = document.getElementById(currentUser.id+"-role-select");
+			
+			if(user_select && type === "success"){
+				user_select.setAttribute("dv", currentUser.new_role); // Update default value
+			} else {
+				user_select.value = user_select.getAttribute("dv"); // Restore if fail
+			}
+		}
+	}
+
 	const handleRoleChange = () => {
 		if(currentUser) {
+			setIsUpdating(true);
 			changeRole({ user_id: currentUser.id, role: currentUser.new_role})
 			.then((updatedUser) => {
 				if(updatedUser) {
@@ -42,20 +57,30 @@ const RoleList = ({ users, setUsers, pageItems }) => {
                         logout();
                         window.location.href = "/authentication"
                     }
-				} else {
-					const errorMessage = updateError ? updateError : "check console for more details.";
-					alert("Error while changing role of user [" + currentUser.email + "]: " + errorMessage);
+
+					handleSelectValue({type: "success"});
 				}
-			});
+			})
+			.then(() => setIsUpdating(false));
 		}
 	};
 
-	useCustomEffect({functions: [getRoles]}); // on load, get roles
-	useCustomEffect({functions: [() => setFilteredUsers(users)], dependencies: [users]}); // on users change, update filtered users
-	useCustomEffect({functions: [handleRoleChange], dependencies: [currentUser]}); // on current user change, change its role
+	const handleRoleChangeError = () => {
+		if(updateError){
+			const errorMessage = updateError ? updateError : "check console for more details.";
+			alert("Error while changing role of user [" + currentUser.email + "]: " + errorMessage);
+			handleSelectValue({type: "error"});
+		}
+	}
+
+	useEffect(() => { getRoles() }, []); // on load, get roles
+	useEffect(() => { setFilteredUsers(users) }, [users]); // on users change, update filtered users
+	useEffect(() => { handleRoleChange() }, [currentUser]); // on current user change, change its role
+	useEffect(() => { handleRoleChangeError() }, [updateError]); // on update error, show error
 
 	return (
 		<>
+		{ isUpdating && <LoadingSpinner position="fixed" /> }
 		{ users.length > 0 ? (
 			<div>
 				<div className="add-button-container">
@@ -79,9 +104,9 @@ const RoleList = ({ users, setUsers, pageItems }) => {
 											<span>Loading roles...</span>
 										) : (
 											rolesError ? (
-												<p>{rolesError?.message}</p>
+												<p>{rolesError?.detail}</p>
 											) : (
-												<Form.Control as="select" defaultValue={user.role.name} onChange={(e) => setCurrentUser({ id: user.id, email: user.email, new_role: e.target.value })}>
+												<Form.Control as="select" dv={user.role.name} id={user.id+"-role-select"} defaultValue={user.role.name} onChange={(e) => setCurrentUser({ id: user.id, email: user.email, new_role: e.target.value })}>
 													{ roles?.map((role) => (<option key={role.name} value={role.name}>{role.name_translated}</option>)) }
 												</Form.Control>
 											)

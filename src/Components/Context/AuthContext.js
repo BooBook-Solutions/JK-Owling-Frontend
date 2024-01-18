@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { jwtDecode } from "jwt-decode";
-import useCustomEffect from '../../Hooks/useCustomEffect';
 
 const AuthContext = createContext();
 
@@ -49,8 +48,8 @@ export const AuthContextProvider = ({ children }) => {
 		}
 	}
 
-	useCustomEffect({ functions: [handleStorage], dependencies: [userState] });
-	useCustomEffect({ functions: [handleExpiration] });
+	useEffect(() => { handleStorage() }, [userState]);
+	useEffect(() => { handleExpiration() }, []);
 
 	return (
 		<AuthContext.Provider value={{ authState: getDecodedState(), token: userState.token, login, logout }}>

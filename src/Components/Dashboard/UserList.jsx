@@ -1,29 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserCard from '../Card/UserCard';
 import PageManager from '../Common/PageManager';
 import SearchBar from '../Common/SearchBar';
-import useCustomEffect from '../../Hooks/useCustomEffect';
 
 const UserList = ({ users, setUsers, pageItems }) => {
 
-    const [filteredUsers, setFilteredUsers] = useState(users);
+    const [filteredUsers, _setFilteredUsers] = useState(users);
+
+    function setFilteredUsers(value) {
+        _setFilteredUsers(value);
+        setUsers(value);
+    }
 
     const { pageManager, currentItems: currentUsers } = PageManager(filteredUsers, pageItems);
 
     const handleUserDeletion = (deletedUserId) => {
         // Filter out the deleted user from the state
-        setUsers(prevUsers => prevUsers.filter(user => user.id !== deletedUserId));
         setFilteredUsers(prevUsers => prevUsers.filter(user => user.id !== deletedUserId));
     };
 
-    useCustomEffect({functions: [() => setFilteredUsers(users)], dependencies: [users]}); //when users change, update filtered users
+    useEffect(() => { setFilteredUsers(users) }, [users]); //when users change, update filtered users
 
     return (
         <>
         { users.length > 0 ? (
             <div>
                 <div className="add-button-container">
-                    <SearchBar items={users} setItems={setFilteredUsers} placeholder={"Search users..."} />
+                    <SearchBar items={users} setItems={_setFilteredUsers} placeholder={"Search users..."} />
                 </div>
                 <div className="row">
                     { currentUsers.map((user) => (

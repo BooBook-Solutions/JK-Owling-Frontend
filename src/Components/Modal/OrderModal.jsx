@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import useAPIFetch from '../../Hooks/useAPIFetch';
 import getUrl from '../../Endpoints/endpoints';
+import LoadingSpinner from '../Common/Spinner';
 
 function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
 
@@ -18,10 +19,13 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
             user: order?.user,
             book: order?.book,
             quantity: order?.quantity,
-            status: order?.status
+            status: order?.status.name
         })
         setShow(true);
     }
+
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
 
     const { handleFetch: updateOrder, error: updateError } = useAPIFetch({
         url: getUrl({ 
@@ -50,18 +54,17 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                 return;
             }
 
+            handleClose();
+            setIsUpdating(true);
             updateOrder({ status })
             .then((updatedOrder) => {
                 if(updatedOrder) {
                     console.log("Order [" + updatedOrder.id + "] correctly updated!")
                     alert("Order [" + updatedOrder.id + "] correctly updated!");
                     onUpdate(updatedOrder);
-                    handleClose();
-                } else {
-                    const errorMessage = updateError ? updateError : "check console for more details.";
-                    alert("Error while updating order [" + order.id + "]: " + errorMessage);
                 }
             })
+            .then(() => setIsUpdating(false));
             
         } else {
             if(![user.id, book.id, quantity].every(Boolean) || quantity <= 0) {
@@ -69,25 +72,43 @@ function OrderModal({ order, type, statuses, onCreate, onUpdate }) {
                 return;
             }
             
+            handleClose();
+            setIsCreating(true);
             createOrder({ user_id: user.id, book_id: book.id, quantity })
             .then((createdOrder) => {
                 if(createdOrder) {
                     console.log("Order [" + createdOrder.id + "] correctly created!")
                     alert("Order [" + createdOrder.id + "] correctly created!");
                     onCreate(createdOrder);
-                    handleClose();
-                } else {
-                    const errorMessage = createError ? createError : "check console for more details.";
-                    alert("Error while creating order: " + errorMessage);
                 }
-            });
+            })
+            .then(() => setIsCreating(false));
         }
     };
 
+    const handleUpdateError = () => {
+		if(updateError){
+			const errorMessage = updateError ? updateError : "check console for more details.";
+            alert("Error while updating order [" + order.id + "]: " + errorMessage);
+		}
+	}
+
+    const handleCreateError = () => {
+		if(createError){
+			const errorMessage = createError ? createError : "check console for more details.";
+            alert("Error while creating order: " + errorMessage);
+		}
+	}
+
+    useEffect(() => { handleUpdateError() }, [updateError]); // on update error, show error
+    useEffect(() => { handleCreateError() }, [createError]); // on create error, show error
+
     return (
         <>
+        { (isUpdating || isCreating) && <LoadingSpinner position="fixed" /> }
+
         { order ? 
-            <Button variant="primary" onClick={handleShow}>Update</Button> :
+            <Button variant="primary" style={{ marginRight: '10px' }} onClick={handleShow}>Update</Button> :
             (
             <Button variant="success" style={{padding: "1px", display: "flex", marginLeft: "10px"}} onClick={handleShow}>
                 <box-icon type="solid" color="white" name="plus-square"></box-icon>
