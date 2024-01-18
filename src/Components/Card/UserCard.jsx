@@ -15,6 +15,7 @@ function UserCard({ user, type, onDelete }) {
 
     const cardStyle = {
         width: type !== "dashboard" ? '18rem' : 'auto',
+        heigth: "100%"
     };
 
     const { handleFetch: deleteUser, error: deleteError } = useAPIFetch({

@@ -11,6 +11,12 @@ import getUrl from '../../Endpoints/endpoints';
 function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
 
     const statusClass = order?.status.name === "pending" ? "text-warning" : order?.status.name === "confirmed" ? "text-success" : "text-danger";
+    
+    const cardStyle = {
+        height: "100%",
+        width: type === "dashboard" ? 'auto' : '18rem',
+    };
+    
     const [isDeleting, setIsDeleting] = useState(false);
 
     const { handleFetch: deleteOrder, error: deleteError } = useAPIFetch({
@@ -48,7 +54,7 @@ function OrderCard({ order, type, statuses, onUpdate, onDelete }) {
     return (
         <>  
             { isDeleting && <LoadingSpinner position="fixed" /> } 
-            <Card style={{ width: '18rem' }}>
+            <Card style={cardStyle}>
                 <Card.Body>
                     <Card.Text><b>Book: </b>{order?.book?.title}</Card.Text>
                     { type === "dashboard" && <Card.Text><b>Buyer: </b>{order?.user?.email || "User deleted" }</Card.Text> }

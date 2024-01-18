@@ -13,9 +13,10 @@ import LoadingSpinner from '../Common/Spinner';
 function BookCard({ book, type, onUpdate, onDelete }) {
 
     const cardStyle = {
+        height: "100%",
         width: type !== "dashboard" ? 'auto' : '18rem',
         maxWidth: '40rem',
-        minWidth: '18rem',
+        minWidth: '18rem'
     };
 
     const [isDeleting, setIsDeleting] = useState(false);
@@ -56,7 +57,7 @@ function BookCard({ book, type, onUpdate, onDelete }) {
         <>
             { isDeleting && <LoadingSpinner position="fixed" /> }
             <Card style={cardStyle}>
-                { type === "dashboard" && <img alt="Cover" width="100px" style={{padding: "5px"}} src={book.cover}/>}
+                <img alt="Cover" width="100px" style={{padding: "5px"}} src={book.cover}/>
                 <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">{book.author}</Card.Subtitle>

@@ -97,6 +97,8 @@ const Book = () => {
     useEffect(() => { getBookListings() }, []); // on load, get book listings
     useEffect(() => { handleOrderError() }, [createError]); // on order error, show alert
 
+    const goBack = () => { window.history.back(); };
+
     return (
         <>
         { !book || !bookMore || !bookListings ? (
@@ -109,76 +111,84 @@ const Book = () => {
                     {isOrdering && <LoadingSpinner position="fixed"/>}
                     <Navigation />
                     <Container className="p-5">
-                    <Card>
+                    <Button variant="link" onClick={goBack}>Go back</Button>
+                    <Card className="d-flex flex-column h-100">
                         <Row>
-                        <Col md={4} className="d-flex align-items-center">
-                            <Card.Img variant="top" src={book.cover} className="p-3"/>
-                        </Col>
-                        <Col md={8}>
-                            <Card.Body>
-                                <Card.Title>{book.title} [{book.id}]</Card.Title>
-                                <Card.Subtitle className="text-muted">{book.author}</Card.Subtitle>
-                                <hr></hr>
-                                <Card.Text><b>Description: </b>{book.description}</Card.Text>
-                                <Card.Text><b>Price: </b>{book.price}€</Card.Text>
-                                <Card.Text><b>Quantity: </b>{book.quantity > 0 ? book.quantity : <span style={{color: "red"}}>Out of stock</span>}</Card.Text>
-                                <Card.Text><b>First publish year: </b>{bookMore.first_publish_year}</Card.Text>
-                                <Card.Text><b>Number of pages: </b>{bookMore.number_of_pages}</Card.Text>
-                                <Card.Text><b>Average Rating: </b>{bookMore.rating}/5</Card.Text>
-                                <Stack direction="horizontal">
-                                    <b>Characters: </b>
-                                    <Row className="ms-2 g-2">
-                                        {bookMore.characters.map((character, index) => (
-                                            <Col key={index}>
-                                                <Badge bg="info">{character}</Badge>
-                                            </Col>
-                                        ))}
-                                    </Row>
-                                </Stack>
-                                <Container className="py-3 px-0">
-                                    <b>First sentences: </b>
-                                    <ListGroup>
-                                        {bookMore.first_sentence.map((sentence, index) => (
-                                            <ListGroup.Item key={index}>"{sentence}"</ListGroup.Item>
-                                        ))}
-                                    </ListGroup>
-                                </Container>
-                                <Stack direction="horizontal">
-                                    <b>Languages: </b>
-                                    <Row className="ms-2 g-2">
-                                        {bookMore.languages.map((language, index) => (
-                                            <Col key={index}>
-                                                <Badge pill bg="secondary">{language}</Badge>
-                                            </Col>
-                                        ))}
-                                    </Row>
-                                </Stack>
-                            </Card.Body>
-                            <hr></hr>
-                            <Container className="d-flex justify-content-end p-2">
-                                <Button variant="warning" onClick={handleOrder}>Order</Button>
-                            </Container>
-                        </Col>
+                            <Col md={4} className="d-flex align-items-center">
+                                <Card.Img variant="top" src={book.cover} className="p-3"/>
+                            </Col>
+                            <Col md={8}>
+                                <Card.Body>
+                                    <Card.Title>{book.title} [{book.id}]</Card.Title>
+                                    <Card.Subtitle className="text-muted">{book.author}</Card.Subtitle>
+                                    <hr></hr>
+                                    <Card.Text><b>Description: </b>{book.description}</Card.Text>
+                                    <Card.Text><b>Price: </b>{book.price}€</Card.Text>
+                                    <Card.Text><b>Quantity: </b>{book.quantity > 0 ? book.quantity : <span style={{color: "red"}}>Out of stock</span>}</Card.Text>
+                                    { bookMore.first_publish_year && <Card.Text><b>First publish year: </b>{bookMore.first_publish_year}</Card.Text> }
+                                    { bookMore.number_of_pages && <Card.Text><b>Number of pages: </b>{bookMore.number_of_pages}</Card.Text> }
+                                    { bookMore.rating && <Card.Text><b>Average Rating: </b>{bookMore.rating}</Card.Text> }
+                                    { bookMore.character &&
+                                        <Stack direction="horizontal">
+                                            <b>Characters: </b>
+                                            <Row className="ms-2 g-2">
+                                                {bookMore.characters.map((character, index) => (
+                                                    <Col key={index}>
+                                                        <Badge bg="info">{character}</Badge>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                        </Stack>
+                                    }
+                                    { bookMore.first_sentence &&
+                                        <Container className="py-3 px-0">
+                                            <b>First sentences: </b>
+                                            <ListGroup>
+                                                {bookMore.first_sentence.map((sentence, index) => (
+                                                    <ListGroup.Item key={index}>"{sentence}"</ListGroup.Item>
+                                                ))}
+                                            </ListGroup>
+                                        </Container>
+                                    }
+                                    { bookMore.languages &&
+                                        <Stack direction="horizontal">
+                                            <b>Languages: </b>
+                                            <Row className="ms-2 g-2">
+                                                {bookMore.languages.map((language, index) => (
+                                                    <Col key={index}>
+                                                        <Badge pill bg="secondary">{language}</Badge>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                        </Stack>
+                                    }
+                                </Card.Body>
+                            </Col>
                         </Row>
+                        <Card.Footer className="d-flex justify-content-end p-2 align-items-end">
+                            <Button variant="warning" onClick={handleOrder}>Order</Button>
+                        </Card.Footer>
                     </Card>
                     <br></br>
-                    <h1 style={{marginTop: "20px"}}>Amazon Listings</h1>
+                    <h1 style={{marginTop: "20px"}}>Related Amazon Listings</h1>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Image</th>
+                                <th>Name</th>
                                 <th>Stars</th>
                                 <th>Price</th>
                                 <th>Link</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {bookListings.map((listing, index) => (
+                            {bookListings?.map((listing, index) => (
                                 <tr key={index}>
                                     <td><img alt="Cover" width="100px" src={listing.image}/></td>
-                                    <td>{listing.stars}</td>
-                                    <td>{listing.price}</td>
-                                    <td><a href={listing.url} target="_blank" rel="noreferrer">Link</a></td>
+                                    <td style={{ maxWidth: "500px" }}>{listing?.name}</td>
+                                    <td>{listing?.stars}</td>
+                                    <td>{listing?.price}</td>
+                                    <td><a href={listing?.url} target="_blank" rel="noreferrer">Link</a></td>
                                 </tr>
                             ))}
                         </tbody>
