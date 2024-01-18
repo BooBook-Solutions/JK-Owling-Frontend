@@ -12,7 +12,7 @@ import getUrl from "../Endpoints/endpoints";
 
 function Catalogue(){
 
-    const { handleFetch: getBooks, data: catalogue, setData: setCatalogue, error } = useAPIFetch({
+    const { handleFetch: getBooks, data: catalogue, error } = useAPIFetch({
         url: getUrl({ endpoint: "BOOKS" })
     })
 
@@ -30,7 +30,7 @@ function Catalogue(){
                     <Navigation />
                     <Container className="p-3">
                         <h1>Catalogue</h1>
-                        { catalogue?.length > 0 ? <BookList books={catalogue} setBooks={setCatalogue} pageItems={8} type={"catalogue"}/> : "No books found." }
+                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "No books found." }
                     </Container>
                 </>
             )
