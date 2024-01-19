@@ -25,10 +25,7 @@ function Navigation() {
             <Nav className="me-auto">
                 <Nav.Link href="/catalogue">Catalogue</Nav.Link>
             </Nav>
-            <Nav className="ms-auto">
-                { !authState.isAuth && <Nav.Link href="/authentication">Authentication</Nav.Link> }
-            </Nav>
-            { authState.isAuth && (
+            { authState.isAuth ? (
                 <Nav className="d-flex align-items-center">
                     <Dropdown autoClose="outside" align={{ lg: 'end' }}>
                         <Dropdown.Toggle variant="info" className="bg-transparent border-light color-black">
@@ -42,6 +39,10 @@ function Navigation() {
                             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
+                </Nav>
+            ): (
+                <Nav className="ms-auto">
+                    <Nav.Link href="/authentication">Authentication</Nav.Link>
                 </Nav>
             )}
             </Navbar.Collapse>
