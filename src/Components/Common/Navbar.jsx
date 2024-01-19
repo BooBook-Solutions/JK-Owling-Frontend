@@ -24,22 +24,25 @@ function Navigation() {
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
                 <Nav.Link href="/catalogue">Catalogue</Nav.Link>
-                { !authState.isAuth && <Nav.Link href="/authentication">Authentication</Nav.Link> }
             </Nav>
-            { authState.isAuth && (
+            { authState.isAuth ? (
                 <Nav className="d-flex align-items-center">
-                <Dropdown autoClose="outside" align={{ lg: 'end' }}>
-                    <Dropdown.Toggle variant="info" className="bg-transparent border-light color-black">
-                    <Image src={authState.user?.picture} width="30px" className="rounded-circle img-responsive"></Image>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                    <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-                    <Dropdown.Item href="/orders">Orders</Dropdown.Item>
-                    { authState.user.role.name === "admin" && <Dropdown.Item href="/dashboard">Dashboard</Dropdown.Item>}
-                    <Dropdown.Divider />
-                    <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                    <Dropdown autoClose="outside" align={{ lg: 'end' }}>
+                        <Dropdown.Toggle variant="info" className="bg-transparent border-light color-black">
+                            <Image src={authState.user?.picture} width="30px" className="rounded-circle img-responsive"></Image>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item href="/profile">Profile</Dropdown.Item>
+                            <Dropdown.Item href="/orders">Orders</Dropdown.Item>
+                            { authState.user.role.name === "admin" && <Dropdown.Item href="/dashboard">Dashboard</Dropdown.Item>}
+                            <Dropdown.Divider />
+                            <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Nav>
+            ): (
+                <Nav className="ms-auto">
+                    <Nav.Link href="/authentication">Authentication</Nav.Link>
                 </Nav>
             )}
             </Navbar.Collapse>

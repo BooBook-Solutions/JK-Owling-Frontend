@@ -7,8 +7,6 @@ function ErrorPage({ eCode, eText}) {
     const location = useLocation();
     const { code, message } = location.state || { code: eCode, message: eText };
 
-    const goBack = () => { window.history.back(); };
-
     return (
         <>
         <Container>
@@ -16,7 +14,7 @@ function ErrorPage({ eCode, eText}) {
                 <div style={{textAlign: "center"}}>
                     <h1>{code}</h1>
                     <h3>{message}</h3>
-                    <Button variant="link" onClick={goBack}>Go back</Button>
+                    <Button variant="link" onClick={() => window.history.back()}>Go back</Button>
                 </div>
                 <br></br>
             </div>

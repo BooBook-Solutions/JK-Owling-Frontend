@@ -2,20 +2,18 @@ import React from 'react';
 
 const SearchBar = ({ items, setItems, placeholder }) => {
 
-	// Function to check if a string is a link
-	function isLink(value) {
-		const linkRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
-		return linkRegex.test(value);
-	}
+	const excludedKeys = ['description', 'picture', 'cover']
 
 	const handleSearch = (query) => {
 		const filterNestedItems = (item) => {
-			return Object.values(item).some((value) => {
+			return Object.entries(item).some(([key, value]) => {
+
 				if (typeof value === 'object' && value !== null) {
 					return filterNestedItems(value);
 				}
-
-				return !isLink(value) && String(value).toLowerCase().includes(query.toLowerCase());
+				
+				console.log(key, value);
+				return !excludedKeys.includes(key) && String(value).toLowerCase().includes(query.toLowerCase());
 			});
 		};
 		

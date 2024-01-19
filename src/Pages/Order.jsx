@@ -27,23 +27,22 @@ const Order = () => {
 
     return (
         <>
-        { !orders && !error ? (
-            <LoadingSpinner />
-        ) : (
-            error ? (
+        { error ? (
                 <ErrorPage eCode={error?.status} eText={error?.detail} />
             ) : (
                 <>
                     <Navigation />
-                    <Container className="p-3">
-                        <Container id="orders" className="mt-5 mb-5">
-                            <h1>Orders</h1>
-                            { orders.length > 0 ? <OrderList orders={orders} setOrders={setOrders} pageItems={6} type={"user_orders"} /> : "No orders found." }
+                    { !orders ? <LoadingSpinner /> : 
+                        <Container className="p-3">
+                            <Container id="orders" className="mt-5 mb-5">
+                                <h1>Orders</h1>
+                                { orders.length > 0 ? <OrderList orders={orders} setOrders={setOrders} pageItems={6} type={"user_orders"} /> : "No orders found." }
+                            </Container>
                         </Container>
-                    </Container>
+                    }
                 </>
             )
-        )}
+        }
         </>
     );
 };
