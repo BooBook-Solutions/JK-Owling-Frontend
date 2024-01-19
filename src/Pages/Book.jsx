@@ -97,8 +97,6 @@ const Book = () => {
     useEffect(() => { getBookListings() }, []); // on load, get book listings
     useEffect(() => { handleOrderError() }, [createError]); // on order error, show alert
 
-    const goBack = () => { window.history.back(); };
-
     return (
         <>
         { bookError || bookMoreError || bookListingsError ? (
@@ -108,7 +106,7 @@ const Book = () => {
                     {isOrdering && <LoadingSpinner position="fixed"/>}
                     <Navigation />
                     <Container className="p-5">
-                        <Button variant="link" onClick={goBack}>Go back</Button>
+                        <Button variant="link" onClick={() => window.history.back()}>Go back</Button>
                         { book ? (
                             <Card className="d-flex flex-column h-100">
                                 <Row>

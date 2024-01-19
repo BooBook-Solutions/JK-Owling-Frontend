@@ -20,21 +20,20 @@ function Catalogue(){
 
     return (
         <>
-        { !catalogue && !error ? (
-            <LoadingSpinner />
-        ) : (
-            error ? (
+        { error ? (
                 <ErrorPage eCode={error?.status} eText={error?.detail} />
             ) : (
                 <>
                     <Navigation />
-                    <Container className="p-3">
-                        <h1>Catalogue</h1>
-                        { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "No books found." }
-                    </Container>
+                    { !catalogue ? <LoadingSpinner /> : 
+                        <Container className="p-3">
+                            <h1>Catalogue</h1>
+                            { catalogue?.length > 0 ? <BookList books={catalogue} pageItems={8} type={"catalogue"}/> : "No books found." }
+                        </Container>
+                    }
                 </>
             )
-        )}
+        }
         </>
     );
 }
