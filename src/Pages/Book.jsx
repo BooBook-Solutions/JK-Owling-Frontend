@@ -119,7 +119,7 @@ const Book = () => {
                                             <Card.Subtitle className="text-muted">{book.author}</Card.Subtitle>
                                             <hr></hr>
                                             <Card.Text><b>Description: </b>{book.description}</Card.Text>
-                                            <Card.Text><b>Price: </b>{book.price}€</Card.Text>
+                                            <Card.Text><b>Price: </b>{book.price.toFixed(2)}€</Card.Text>
                                             <Card.Text><b>Quantity: </b>{book.quantity > 0 ? book.quantity : <span style={{color: "red"}}>Out of stock</span>}</Card.Text>
                                             { bookMore ? (
                                                 <>

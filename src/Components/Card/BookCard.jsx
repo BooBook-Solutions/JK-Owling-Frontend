@@ -63,7 +63,7 @@ function BookCard({ book, type, onUpdate, onDelete }) {
                     <Card.Subtitle className="mb-2 text-muted">{book.author}</Card.Subtitle>
                     <Card.Text><b>Book ID: </b>{book.id}</Card.Text>
                 </Card.Body>
-                <Card.Footer><b>Price: </b>{book.price}€</Card.Footer>
+                <Card.Footer><b>Price: </b>{book.price.toFixed(2)}€</Card.Footer>
                 { type !== "catalogue" && <Card.Footer><b>Quantity: </b>{book.quantity > 0 ? book.quantity : <span style={{color: "red"}}>Out of stock</span>}</Card.Footer> }
                 <Card.Footer>
                     { type === "dashboard" ? (

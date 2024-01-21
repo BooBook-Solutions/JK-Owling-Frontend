@@ -27,7 +27,7 @@ function BookModal({ book, onCreate, onUpdate }) {
             author: book?.author,
             description: book?.description,
             cover: book?.cover,
-            price: book?.price,
+            price: book?.price.toFixed(2),
             quantity: book?.quantity
         })
         setCurrentPage(1);
