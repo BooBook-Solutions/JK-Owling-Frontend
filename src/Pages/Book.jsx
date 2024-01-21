@@ -125,7 +125,7 @@ const Book = () => {
                                                 <>
                                                 { bookMore.first_publish_year && <Card.Text><b>First publish year: </b>{bookMore.first_publish_year}</Card.Text> }
                                                 { bookMore.number_of_pages && <Card.Text><b>Number of pages: </b>{bookMore.number_of_pages}</Card.Text> }
-                                                { bookMore.rating && <Card.Text><b>Average Rating: </b>{bookMore.rating}</Card.Text> }
+                                                { bookMore.rating && <Card.Text><b>Average Rating: </b>{bookMore.rating.toFixed(1)} / 5</Card.Text> }
                                                 { bookMore.character &&
                                                     <Stack direction="horizontal">
                                                         <b>Characters: </b>
@@ -184,9 +184,9 @@ const Book = () => {
                                     <tr>
                                         <th>Image</th>
                                         <th>Name</th>
-                                        <th>Stars</th>
+                                        <th>Rating</th>
                                         <th>Price</th>
-                                        <th>Link</th>
+                                        <th>Amazon Link</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -194,7 +194,7 @@ const Book = () => {
                                         <tr key={index}>
                                             <td><img alt="Cover" width="100px" src={listing.image}/></td>
                                             <td style={{ maxWidth: "500px" }}>{listing?.name}</td>
-                                            <td>{listing?.stars}</td>
+                                            <td>{listing?.stars} / 5</td>
                                             <td>{listing?.price}</td>
                                             <td><a href={listing?.url} target="_blank" rel="noreferrer">Link</a></td>
                                         </tr>
